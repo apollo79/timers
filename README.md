@@ -1,8 +1,33 @@
 # timers
-
 All timing functions you need - for Deno and the browser
 
-## long timeouts and intervals
+
+## Badges
+
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
+[![CodeQL](https://github.com/apollo79/timers/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/apollo79/timers/actions/workflows/codeql-analysis.yml)
+[![Deno](https://github.com/apollo79/timers/actions/workflows/deno.yml/badge.svg)](https://github.com/apollo79/timers/actions/workflows/deno.yml)
+
+## Installation
+
+Just import it directly from the [https://deno.land/x/](https://deno.land/x/) registry
+
+```ts
+import {
+    setTimeout,
+    setInterval,
+    times,
+    delay,
+} from "httsp://deno.land/x/timers@0.1.0/mod.ts"
+```
+## Documentation
+
+[Documentation](https://linktodocumentation)
+
+
+## Features
+
+### long timeouts and intervals
 
 With `timers` it is possible to have a timeout or interval that is longer than
 24.8 days (2^31-1 milliseconds).
@@ -35,7 +60,7 @@ clearTimeout(timeout);
 clearInterval(interval);
 ```
 
-### **Note**
+#### **Note**
 
 If you don't want the native functions overwritten, `setTimeout` and
 `setInterval` are exported as `setLongTimeout` and `setLongInterval` as well.
@@ -52,7 +77,7 @@ import {
 } from "https://deno.land/x/timers@0.1.0/mod.ts";
 ```
 
-## `delay`
+### `delay`
 
 `timers` exports the function `delay`, which resolves after a given delay. Also
 with this function it is possible to have a delay longer than 24.8 days.\
@@ -80,7 +105,7 @@ await delay(2000, {
 info.textContent = MSG;
 ```
 
-## `times`
+### `times`
 
 Another function `timers` provides is `times`. It is basically like
 `setInterval`, but executes the interval just a certain number of times.\
@@ -114,7 +139,7 @@ times(
 );
 ```
 
-## `pTimeout`
+### `pTimeout`
 
 Timeout a promise after a specified amount of time. This function uses
 [p_timeout](https://deno.land/x/p_timeout@1.0.2) from
@@ -137,14 +162,14 @@ await pTimeout({
 Example taken from the Readme of
 [p_timeout](https://deno.land/x/p_timeout@1.0.2)
 
-## `timeout` and `interval`
+### `timeout` and `interval`
 
 `timeout` and `interval` are like `setTimeout` and `setInterval`, but have the
 options `signal`, `persistent` (only available in Deno), `args`, and (only
 `interval`), `times` and have typings, meaning that the `args` option's type
 must equal the type of the argument expected by the callback.
 
-## `Timeout` and `Interval` classes
+### `Timeout` and `Interval` classes
 
 Under the hood, all of these functions use the `Timeout` and `Interval` classes.
 They are exported as well and you can use them to create timeouts without
@@ -165,7 +190,7 @@ notifyBtn.addEventListener("click", () => timeout.run(), { once: true });
 For `Timeout`, the following options are available: `signal`, `persistent` (only
 available in Deno) and `args`, for `Interval` additionally `times`.
 
-### Properties
+#### Properties
 
 (Note: the word timeout will be used for both timeout and interval)\
 `aborted`: A Promise, that resolves, when the timeout gets aborted, but only, if
@@ -178,18 +203,18 @@ should continues running as long as the timer exists. This is `true` by default\
 `ran`: A boolean indicating whether the timeout has already run\
 `running`: A boolean indicating whether the timeout is currently running
 
-#### Interval only
+##### Interval only
 
 `runs`: A number representing the amount of times the interval has run since now
 
-### Methods
+#### Methods
 
 `run()`: runs the timeout and returns the timeout's id\
 `abort(reason?: any)`: aborts the timeout\
 `unref()`: makes the process not continue to run as long as the timer exists\
 `ref()`: makes the process continue to run as long as the timer exists
 
-### **NOTE**
+##### **NOTE**
 
 _It is highly recommended to avoid using `clearTimeout` or `clearInterval` with
 an instance of Timeout or Interval, as those won't set `running`, `ran`,
@@ -198,9 +223,10 @@ date! Use the `abort` method or an `AbortController` instead. It is also not
 recommended to use `Deno.refTimer()` and `Deno.unrefTimer()`, as they make the
 `persistent` property inconsistent_
 
+
 ## Running Tests
 
-To run tests, clone the repository, run the following command
+To run tests, clone the repository, and run the following command
 
 ```bash
 deno test
@@ -212,7 +238,8 @@ or, without cloning
 deno test https://deno.land/x/timers@0.1.0/test.ts
 ```
 
-## Contribuiting
+
+## Contributing
 
 Contributions are always welcome!
 
@@ -220,7 +247,7 @@ You found a bug or have an idea about a function, that is not yet implemented in
 this module?\
 Feel free to open an [issue](https://github.com/apollo79/timers/issues/new) or a
 PR!
-
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
+
