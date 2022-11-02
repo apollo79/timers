@@ -20,11 +20,6 @@ import {
     delay,
 } from "httsp://deno.land/x/timers@0.1.0/mod.ts"
 ```
-## Documentation
-
-[Documentation](https://linktodocumentation)
-
-
 ## Features
 
 ### long timeouts and intervals
