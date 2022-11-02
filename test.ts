@@ -6,9 +6,8 @@ import {
   setInterval,
   setTimeout,
   delay,
-  interval,
-  timeout,
   times,
+  pTimeout,
 } from "./mod.ts";
 import { describe, it } from "https://deno.land/std@0.161.0/testing/bdd.ts";
 import {
@@ -21,6 +20,7 @@ import {
 } from "https://deno.land/std@0.161.0/testing/asserts.ts";
 import { delay as stdDelay } from "https://deno.land/std@0.161.0/async/delay.ts";
 import { AbortException } from "./Base.ts";
+import { TimeoutError } from "https://deno.land/x/p_timeout@1.0.2/mod.ts";
 
 const noop = () => {};
 
@@ -525,5 +525,25 @@ describe("advanced functionality", () => {
     for (let i = 0; i <= 7; i++) {
       await stdDelay(110);
     }
+  });
+
+  it("pTimeout", async () => {
+    let timeout: number;
+
+    const delayedPromise = new Promise((resolve) => {
+      timeout = setTimeout(resolve, 500);
+    });
+
+    await assertRejects(
+      () =>
+        pTimeout({
+          promise: delayedPromise,
+          milliseconds: 50,
+        }),
+      TimeoutError,
+      "Promise timed out after 50 milliseconds"
+    );
+
+    clearTimeout(timeout!);
   });
 });

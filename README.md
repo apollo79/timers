@@ -4,7 +4,7 @@ All timing functions you need - for Deno and the browser
 ## long timeouts and intervals
 With `timers` it is possible to have a timeout or interval that is longer than 24.8 days (2^31-1 milliseconds).
 
-For this usecase `timers` exports two functions: `setTimeout` `setInterval`.
+For this usecase `timers` exports two functions: `setTimeout` and `setInterval`.
 
 They are completely compatible with the Web API's functions.
 
@@ -27,8 +27,9 @@ clearTimeout(timeout)
 clearInterval(interval)
 ```
 
-### Note
-If you don't want the native functions overwritten, `setTimeout` and `setInterval` are exported as `setLongTimeout` and `setLongInterval` as well. This also applies to `clearTimeout` and `clearInterval`.
+### **Note**
+If you don't want the native functions overwritten, `setTimeout` and `setInterval` are exported as `setLongTimeout` and `setLongInterval` as well. This also applies to `clearTimeout` and `clearInterval`.  
+Also you can at any time use `globalThis.setTimeout`, which applies to the other functions as well
 
 ```ts
 import { setLongTimeout, clearLongTimeout, setLongInterval, clearLongInterval } from "https://deno.land/x/timers@0.1.0/mod.ts";
@@ -87,14 +88,14 @@ Timeout a promise after a specified amount of time.
 This function uses [p_timeout](https://deno.land/x/p_timeout@1.0.2) from [Khushraj Rathod](https://github.com/khrj) and uses the option to pass custom implementations for `setTimeout` and `clearTimeout` it provides.
 
 ```ts
-import pTimeout from "https://deno.land/x/p_timeout@1.0.2/mod.ts"
+import { pTimeout, setTimeout } from "https://deno.land/x/timers@0.1.0/mod.ts"
 
-const delayedPromise = new Promise(resolve => setTimeout(resolve, 500))
+const delayedPromise = new Promise(resolve => setTimeout(resolve, 500));
 
 await pTimeout({
     promise: delayedPromise,
     milliseconds: 50,
-})
+});
 
 // => [TimeoutError: Promise timed out after 50 milliseconds]
 ```
