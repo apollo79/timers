@@ -51,7 +51,7 @@ export class Timeout<T extends any[] = any[]> extends Base<T> {
   constructor(
     cb: Listener<T>,
     delay: number = 0,
-    options: TimeoutOptions<T> = {}
+    options: TimeoutOptions<T> = {},
   ) {
     super(cb, delay, options);
   }
@@ -75,7 +75,7 @@ export class Timeout<T extends any[] = any[]> extends Base<T> {
             this._ran = true;
           },
           this._timeLeft,
-          ...this.options.args!
+          ...this.options.args!,
         );
       } else {
         this._timer = globalThis.setTimeout(
@@ -84,7 +84,7 @@ export class Timeout<T extends any[] = any[]> extends Base<T> {
             this.run();
           },
           TIMEOUT_MAX,
-          ...this.options.args!
+          ...this.options.args!,
         );
       }
 
@@ -131,7 +131,7 @@ export class Interval<T extends any[] = any[]> extends Base<T> {
   constructor(
     cb: Listener<T>,
     delay: number = 0,
-    options: IntervalOptions<T> = {}
+    options: IntervalOptions<T> = {},
   ) {
     super(cb, delay, options);
 
@@ -169,7 +169,7 @@ export class Interval<T extends any[] = any[]> extends Base<T> {
             }
           },
           this.delay,
-          ...this.options.args!
+          ...this.options.args!,
         );
       } else {
         if (this._timeLeft <= TIMEOUT_MAX) {
@@ -180,7 +180,7 @@ export class Interval<T extends any[] = any[]> extends Base<T> {
               this._timeLeft = this.delay;
             },
             this._timeLeft,
-            ...this.options.args!
+            ...this.options.args!,
           );
         } else {
           this._timer = globalThis.setTimeout(
@@ -190,7 +190,7 @@ export class Interval<T extends any[] = any[]> extends Base<T> {
               this.run();
             },
             TIMEOUT_MAX,
-            ...this.options.args!
+            ...this.options.args!,
           );
         }
       }
@@ -246,26 +246,26 @@ export function clearInterval(id?: number) {
 /**
  * Resolves after the given number of milliseconds.
  * @param ms milliseconds to wait
- * 
+ *
  * ```ts
  * const MSG = "Please type your name";
  * const info = document.querySelector("p.info");
- * const nameInput = document.querySelector("input.name"); 
+ * const nameInput = document.querySelector("input.name");
  * const abort = new AbortController();
  * const { signal } = abort;
- * 
+ *
  * nameInput.addEventListener("input", () => abort.abort(), { once: true });
- * 
+ *
  * await delay(2000, {
  *     signal
  * });
- * 
+ *
  * info.textContent = MSG;
 ```
  */
 export function delay(
   ms: number,
-  options: Omit<TimeoutOptions, "args"> = {}
+  options: Omit<TimeoutOptions, "args"> = {},
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     const timeout = new Timeout(resolve, ms, options);
@@ -282,22 +282,22 @@ export function delay(
 
 /**
  * execute a callback specified times with delay
- * 
+ *
  * @example
  * ```ts
  * import { times } from "https://deno.land/x/timers@0.1.0/mod.ts";
- * 
+ *
  * const paragraph = document.querySelector("p.numbers");
  * const abortBtn = document.querySelector("button.abort");
  * const abort = new AbortController();
  * const { signal } = abort;
- * 
+ *
  * abortBtn.addEventListener("click", () => abort.abort(), { once: true })
- * 
+ *
  * let i = 0;
  * times(() => {
  *     paragraph.textContent += `${i}, `;
- * 
+ *
  *     i++;
  * }, 200, 20, {
  *     signal
@@ -308,7 +308,7 @@ export function times<T extends any[] = any[]>(
   cb: Listener<T>,
   delay: number,
   times: number,
-  options: Omit<IntervalOptions<T>, "times"> = {}
+  options: Omit<IntervalOptions<T>, "times"> = {},
 ) {
   const interval = new Interval<T>(cb, delay, {
     ...options,
@@ -329,7 +329,7 @@ export function times<T extends any[] = any[]>(
 export function timeout<T extends any[] = any[]>(
   cb: Listener<T>,
   delay?: number,
-  options: TimeoutOptions<T> = {}
+  options: TimeoutOptions<T> = {},
 ) {
   const interval = new Timeout<T>(cb, delay, options);
 
@@ -347,7 +347,7 @@ export function timeout<T extends any[] = any[]>(
 export function interval<T extends any[] = any[]>(
   cb: Listener<T>,
   delay?: number,
-  options: IntervalOptions<T> = {}
+  options: IntervalOptions<T> = {},
 ) {
   const interval = new Interval<T>(cb, delay, options);
 
@@ -391,10 +391,10 @@ export function pTimeout<T>(options: Parameters<typeof origPTimeout<T>>[0]) {
 }
 
 export {
-  setTimeout as setLongTimeout,
-  setInterval as setLongInterval,
-  clearTimeout as clearLongTimeout,
   clearInterval as clearLongInterval,
+  clearTimeout as clearLongTimeout,
+  setInterval as setLongInterval,
+  setTimeout as setLongTimeout,
 };
 
 export { TimeoutError } from "https://deno.land/x/p_timeout@1.0.2/mod.ts";

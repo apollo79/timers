@@ -58,7 +58,6 @@ export abstract class Base<T extends any[] = any[]> {
   }
 
   /**
-   *
    * @param cb The callback to get executed
    * @param delay The time to delay
    * @param options
@@ -69,7 +68,7 @@ export abstract class Base<T extends any[] = any[]> {
   constructor(
     public readonly cb: Listener<T>,
     public readonly delay: number,
-    options: BaseOptions<T>
+    options: BaseOptions<T>,
   ) {
     this._timeLeft = this.delay;
 
