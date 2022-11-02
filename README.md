@@ -142,3 +142,26 @@ For `Timeout`, the following options are available: `signal`, `persistent` (only
 
 ### **NOTE**
 *It is highly recommended to avoid using `clearTimeout` or `clearInterval` with an instance of Timeout or Interval, as those won't set `running`, `ran`, `isAborted` and `abort`, so you lose warranty that those properties are up to date! Use the `abort` method or an `AbortController` instead. It is also not recommended to use `Deno.refTimer()` and `Deno.unrefTimer()`, as they make the `persistent` property inconsistent*
+
+
+## Running Tests
+
+To run tests, clone the repository, run the following command
+```bash
+  deno test
+```
+
+or, without cloning
+```bash
+  deno test https://deno.land/x/timers@0.1.0/test.ts
+```
+
+
+## Contribuiting
+Contributions are always welcome!
+
+You found a bug or have an idea about a function, that is not yet implemented in this module?  
+Feel free to open an [issue](https://github.com/apollo79/timers/issues/new) or a PR!
+
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
