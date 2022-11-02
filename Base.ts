@@ -18,8 +18,6 @@ export class AbortException extends DOMException {
 export abstract class Base<T extends any[] = any[]> {
   /** Indicates whether the process should continue to run as long as the timer exists. This is `true` by default. */
   protected _persistent: boolean;
-  /** Indicates whether the timer has been unreffed already */
-  protected _unreffed = false;
   /** The timer Id */
   protected _timer?: number;
   protected _timeLeft!: number;
@@ -110,12 +108,11 @@ export abstract class Base<T extends any[] = any[]> {
    * makes the process not continue to run as long as the timer exists
    */
   unref() {
-    if (this._unreffed && this._timer) {
+    if (this._persistent && this._timer) {
       try {
         // @ts-ignore For browser compatibility
         Deno.unrefTimer(this._timer);
         this._persistent = false;
-        this._unreffed = true;
       } catch (error) {
         if (!(error instanceof ReferenceError)) {
           throw error;
@@ -130,12 +127,11 @@ export abstract class Base<T extends any[] = any[]> {
    * makes the process not continue to run as long as the timer exists
    */
   ref() {
-    if (this._unreffed && this._timer) {
+    if (!this._persistent && this._timer) {
       try {
         // @ts-ignore For browser compatibility
         Deno.refTimer(this._timer);
         this._persistent = true;
-        this._unreffed = false;
       } catch (error) {
         if (!(error instanceof ReferenceError)) {
           throw error;

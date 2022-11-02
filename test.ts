@@ -8,6 +8,7 @@ import {
   delay,
   interval,
   timeout,
+  times,
 } from "./mod.ts";
 import { describe, it } from "https://deno.land/std@0.161.0/testing/bdd.ts";
 import {
@@ -111,6 +112,25 @@ describe("basic functionality", () => {
 
 describe("advanced functionality", () => {
   describe("Timeout", () => {
+    it("persistent property", async () => {
+      const timeout = new Timeout(noop, 100, {
+        persistent: false,
+      });
+
+      timeout.run();
+
+      assert(!timeout.persistent);
+
+      timeout.ref();
+
+      assert(timeout.persistent);
+
+      timeout.unref();
+
+      assert(!timeout.persistent);
+
+      await stdDelay(110);
+    });
     it("running and ran property", async () => {
       const timeout = new Timeout(noop, 100);
 
@@ -359,7 +379,7 @@ describe("advanced functionality", () => {
     });
 
     it("times", async () => {
-      let i = 1;
+      let i = 0;
 
       const interval = new Interval(
         () => {
@@ -375,12 +395,32 @@ describe("advanced functionality", () => {
         }
       );
 
-      for (let i = 0; i <= 6; i++) {
-        await stdDelay(110);
+      interval.run();
 
-        if (i === 5) {
-          interval.abort();
+      for (let i = 0; i <= 7; i++) {
+        await stdDelay(110);
+      }
+    });
+
+    it("runs property", async () => {
+      let i = 0;
+
+      const interval = new Interval(
+        () => {
+          i++;
+
+          assertEquals(interval.runs, i);
+        },
+        100,
+        {
+          times: 5,
         }
+      );
+
+      interval.run();
+
+      for (let i = 0; i <= 5; i++) {
+        await stdDelay(110);
       }
     });
   });
@@ -465,5 +505,25 @@ describe("advanced functionality", () => {
 
       assert(diff < 100);
     });
+  });
+
+  it("times", async () => {
+    let i = 0;
+
+    const interval = times(
+      () => {
+        i++;
+
+        if (i > 5) {
+          unreachable();
+        }
+      },
+      100,
+      5
+    );
+
+    for (let i = 0; i <= 7; i++) {
+      await stdDelay(110);
+    }
   });
 });
