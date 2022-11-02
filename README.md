@@ -1,6 +1,6 @@
 # timers
-All timing functions you need - for Deno and the browser
 
+All timing functions you need - for Deno and the browser
 
 ## Badges
 
@@ -10,16 +10,18 @@ All timing functions you need - for Deno and the browser
 
 ## Installation
 
-Just import it directly from the [https://deno.land/x/](https://deno.land/x/) registry
+Just import it directly from the [https://deno.land/x/](https://deno.land/x/)
+registry
 
 ```ts
 import {
-    setTimeout,
-    setInterval,
-    times,
-    delay,
-} from "httsp://deno.land/x/timers@0.1.0/mod.ts"
+  delay,
+  setInterval,
+  setTimeout,
+  times,
+} from "httsp://deno.land/x/timers@0.1.0/mod.ts";
 ```
+
 ## Features
 
 ### long timeouts and intervals
@@ -218,7 +220,6 @@ date! Use the `abort` method or an `AbortController` instead. It is also not
 recommended to use `Deno.refTimer()` and `Deno.unrefTimer()`, as they make the
 `persistent` property inconsistent_
 
-
 ## Running Tests
 
 To run tests, clone the repository, and run the following command
@@ -233,7 +234,6 @@ or, without cloning
 deno test https://deno.land/x/timers@0.1.0/test.ts
 ```
 
-
 ## Contributing
 
 Contributions are always welcome!
@@ -242,7 +242,7 @@ You found a bug or have an idea about a function, that is not yet implemented in
 this module?\
 Feel free to open an [issue](https://github.com/apollo79/timers/issues/new) or a
 PR!
+
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
-
