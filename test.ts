@@ -48,7 +48,7 @@ describe("basic functionality", () => {
           assertEquals(passedArgs, args);
         },
         100,
-        ...args
+        ...args,
       );
 
       await stdDelay(110);
@@ -100,7 +100,7 @@ describe("basic functionality", () => {
           assertEquals(passedArgs, args);
         },
         100,
-        ...args
+        ...args,
       );
 
       await stdDelay(110);
@@ -169,7 +169,7 @@ describe("advanced functionality", () => {
             console;
           },
           100,
-          { signal: abort.signal }
+          { signal: abort.signal },
         );
 
         const timeout = new Timeout(unreachable, 100, {
@@ -218,7 +218,7 @@ describe("advanced functionality", () => {
 
         assertThrows(
           () => timeout.run(),
-          "The timeout has been aborted before running"
+          "The timeout has been aborted before running",
         );
 
         await stdDelay(100);
@@ -274,7 +274,7 @@ describe("advanced functionality", () => {
             100,
             {
               signal,
-            }
+            },
           );
 
           timeout.run();
@@ -317,7 +317,7 @@ describe("advanced functionality", () => {
             100,
             {
               signal,
-            }
+            },
           );
 
           await timeout.aborted.then(() => {
@@ -370,7 +370,7 @@ describe("advanced functionality", () => {
 
           assertThrows(
             () => timeout.run(),
-            "The timeout has been aborted before running"
+            "The timeout has been aborted before running",
           );
 
           await stdDelay(100);
@@ -392,7 +392,7 @@ describe("advanced functionality", () => {
         100,
         {
           times: 5,
-        }
+        },
       );
 
       interval.run();
@@ -414,7 +414,7 @@ describe("advanced functionality", () => {
         100,
         {
           times: 5,
-        }
+        },
       );
 
       interval.run();
@@ -448,7 +448,7 @@ describe("advanced functionality", () => {
       await assertRejects(
         () => delayedPromise,
         DOMException,
-        "Delay was aborted"
+        "Delay was aborted",
       );
 
       const diff = new Date().getTime() - start.getTime();
@@ -498,7 +498,7 @@ describe("advanced functionality", () => {
       await assertRejects(
         () => delayedPromise,
         AbortException,
-        "Delay was aborted"
+        "Delay was aborted",
       );
 
       const diff = new Date().getTime() - start.getTime();
@@ -519,7 +519,7 @@ describe("advanced functionality", () => {
         }
       },
       100,
-      5
+      5,
     );
 
     for (let i = 0; i <= 7; i++) {
@@ -541,7 +541,7 @@ describe("advanced functionality", () => {
           milliseconds: 50,
         }),
       TimeoutError,
-      "Promise timed out after 50 milliseconds"
+      "Promise timed out after 50 milliseconds",
     );
 
     clearTimeout(timeout!);
