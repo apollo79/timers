@@ -140,4 +140,4 @@ For `Timeout`, the following options are available: `signal`, `persistent` (only
 `ref()`: makes the process continue to run as long as the timer exists
 
 ### **NOTE**
-*It is highly recommended to avoid using `clearTimeout` or `clearInterval` with an instance of Timeout or Interval, as those won't set `running`, `ran`, `isAborted` and `abort`, so you lose warranty that those properties are up to date!*
+*It is highly recommended to avoid using `clearTimeout` or `clearInterval` with an instance of Timeout or Interval, as those won't set `running`, `ran`, `isAborted` and `abort`, so you lose warranty that those properties are up to date! Use the `abort` method or an `AbortController` instead. It is also not recommended to use `Deno.refTimer()` and `Deno.unrefTimer()`, as they make the `persistent` property inconsistent*
