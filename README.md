@@ -7,6 +7,8 @@ All timing functions you need - for Deno and the browser
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 [![CodeQL](https://github.com/apollo79/timers/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/apollo79/timers/actions/workflows/codeql-analysis.yml)
 [![Deno](https://github.com/apollo79/timers/actions/workflows/deno.yml/badge.svg)](https://github.com/apollo79/timers/actions/workflows/deno.yml)
+![Code Coverage](https://img.shields.io/static/v1?label=coverage&message=81.5%&color=yellowgreen)
+
 
 ## Installation
 
