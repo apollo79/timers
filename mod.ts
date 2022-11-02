@@ -396,3 +396,6 @@ export {
   clearTimeout as clearLongTimeout,
   clearInterval as clearLongInterval,
 };
+
+export { TimeoutError } from "https://deno.land/x/p_timeout@1.0.2/mod.ts";
+export type { ClearablePromise } from "https://deno.land/x/p_timeout@1.0.2/mod.ts";
