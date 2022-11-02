@@ -1,4 +1,12 @@
 {
   "deno.enable": true,
-  "deno.unstable": true
+  "deno.unstable": true,
+  "emeraldwalk.runonsave": {
+    "commands": [
+      {
+        "match": ".*",
+        "cmd": "deno fmt ${file}"
+      }
+    ]
+  }
 }

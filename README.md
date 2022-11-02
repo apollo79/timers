@@ -9,7 +9,6 @@ All timing functions you need - for Deno and the browser
 [![Deno](https://github.com/apollo79/timers/actions/workflows/deno.yml/badge.svg)](https://github.com/apollo79/timers/actions/workflows/deno.yml)
 ![Code Coverage](https://img.shields.io/static/v1?label=coverage&message=81.5%&color=yellowgreen)
 
-
 ## Installation
 
 Just import it directly from the [https://deno.land/x/](https://deno.land/x/)
