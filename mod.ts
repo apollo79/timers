@@ -308,7 +308,7 @@ export function times<T extends any[] = any[]>(
   cb: Listener<T>,
   delay: number,
   times: number,
-  options: Omit<IntervalOptions<T>, "times">
+  options: Omit<IntervalOptions<T>, "times"> = {}
 ) {
   const interval = new Interval<T>(cb, delay, {
     ...options,
@@ -328,8 +328,8 @@ export function times<T extends any[] = any[]>(
  */
 export function timeout<T extends any[] = any[]>(
   cb: Listener<T>,
-  delay: number,
-  options: TimeoutOptions<T>
+  delay?: number,
+  options: TimeoutOptions<T> = {}
 ) {
   const interval = new Timeout<T>(cb, delay, options);
 
@@ -346,7 +346,7 @@ export function timeout<T extends any[] = any[]>(
  */
 export function interval<T extends any[] = any[]>(
   cb: Listener<T>,
-  delay: number,
+  delay?: number,
   options: IntervalOptions<T> = {}
 ) {
   const interval = new Interval<T>(cb, delay, options);
