@@ -116,9 +116,7 @@ export function times<T extends any[] = any[]>(
     times,
   });
 
-  interval.run();
-
-  return interval.timer!;
+  return interval.run();
 }
 
 /**
