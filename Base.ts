@@ -1,17 +1,11 @@
 // deno-lint-ignore-file no-explicit-any
-import { Listener } from "./mod.ts";
+import { AbortException, Listener } from "./mod.ts";
 
 export interface BaseOptions<T extends any[] = any[]> {
   args?: T;
   signal?: AbortSignal;
   /** Indicates whether the process should continue to run as long as the timer exists. This is `true` by default. */
   persistent?: boolean;
-}
-
-export class AbortException extends DOMException {
-  constructor(public cause?: any) {
-    super("Delay was aborted.", "AbortError");
-  }
 }
 
 // shared functionality

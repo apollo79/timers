@@ -2,216 +2,18 @@
 /**
  * This module is browser compatible
  */
-import { AbortException, Base, BaseOptions } from "./Base.ts";
 import origPTimeout from "https://deno.land/x/p_timeout@1.0.2/mod.ts";
+import { Every } from "./Every.ts";
+import { Interval, IntervalOptions } from "./Interval.ts";
+import { Timeout, TimeoutOptions } from "./Timeout.ts";
 
 export type Listener<T extends any[] = any[]> = (...args: T) => void;
 
-// deno-lint-ignore no-empty-interface
-export interface TimeoutOptions<T extends any[] = any[]>
-  extends BaseOptions<T> {}
+export const TIMEOUT_MAX = 2147483647; // 2^31-1
 
-export interface IntervalOptions<T extends any[] = any[]>
-  extends BaseOptions<T> {
-  times?: number;
-}
-
-const TIMEOUT_MAX = 2147483647; // 2^31-1
-
-/**
- * @class The class representing a timeout
- * @example
- * ```ts
- * const abort = new AbortController();
- * const { signal } = abort;
- * const timeout = new Timeout(
- *   () => {
- *     console.log("hello world");
- *   },
- *   100,
- *   { signal, }
- * );
- *
- * timeout.run();
- *
- * yourService.addEventListener("error", () => abort.abort(), { once: true })
- * ```
- */
-export class Timeout<T extends any[] = any[]> extends Base<T> {
-  declare readonly options: TimeoutOptions<T>;
-
-  /**
-   * @param cb The callback to get executed
-   * @param delay The time to delay
-   * @param options
-   * @param options.args The arguments to get passed to the callback
-   * @param options.signal An AbortSignal. It can abort the timer
-   * @param options.persistent Indicates whether the process should continue to run as long as the timer exists. This is `true` by default.
-   */
-  constructor(
-    cb: Listener<T>,
-    delay: number = 0,
-    options: TimeoutOptions<T> = {},
-  ) {
-    super(cb, delay, options);
-  }
-
-  run(): number {
-    if (this._running) {
-      throw new Error("The timeout is already running");
-    } else if (this._ran) {
-      throw new Error("The timeout ran already");
-    } else if (this._isAborted) {
-      throw new Error("The timeout has been aborted before running");
-    } else {
-      if (this._timeLeft <= TIMEOUT_MAX) {
-        this._timer = globalThis.setTimeout(
-          (...args) => {
-            this.cb?.(...(args as T));
-
-            this.options.signal?.removeEventListener("abort", this.abort);
-
-            this._running = false;
-            this._ran = true;
-          },
-          this._timeLeft,
-          ...this.options.args!,
-        );
-      } else {
-        this._timer = globalThis.setTimeout(
-          () => {
-            this._timeLeft -= TIMEOUT_MAX;
-            this.run();
-          },
-          TIMEOUT_MAX,
-          ...this.options.args!,
-        );
-      }
-
-      this._running = true;
-    }
-
-    if (!this._persistent) {
-      this.unref();
-    }
-
-    return this.timer!;
-  }
-
-  abort(reason?: any) {
-    this._running = false;
-    const exception = new AbortException(reason);
-
-    this._resolveAborted(exception);
-
-    globalThis.clearTimeout(this._timer);
-  }
-}
-
-/**
- * @class A class representing an Interval
- */
-export class Interval<T extends any[] = any[]> extends Base<T> {
-  declare readonly options: IntervalOptions<T>;
-  protected _runs: number;
-
-  get runs() {
-    return this._runs;
-  }
-
-  /**
-   * @param cb The callback to get executed
-   * @param delay The time to delay
-   * @param options
-   * @param options.args The arguments to get passed to the callback
-   * @param options.signal An AbortSignal. It can abort the timer
-   * @param options.persistent Indicates whether the process should continue to run as long as the timer exists. This is `true` by default.
-   * @param options.times How often the timer should run
-   */
-  constructor(
-    cb: Listener<T>,
-    delay: number = 0,
-    options: IntervalOptions<T> = {},
-  ) {
-    super(cb, delay, options);
-
-    const { times } = options;
-
-    this.options = {
-      times: times ?? Infinity,
-      ...this.options,
-    };
-
-    this._runs = 0;
-  }
-
-  run(): number {
-    if (this._running) {
-      throw new Error("The interval is already running");
-    } else if (this._ran) {
-      throw new Error("The interval ran already");
-    } else if (this._isAborted) {
-      throw new Error("The interval has been aborted before running");
-    } else {
-      if (this.delay <= TIMEOUT_MAX) {
-        this._timer = globalThis.setInterval(
-          (...args) => {
-            // order is important!
-            // first update
-            this._runs++;
-
-            // then call the callback
-            this.cb(...(args as T));
-
-            // if the runs are finished, abort
-            if (this._runs! === this.options.times!) {
-              this.abort();
-            }
-          },
-          this.delay,
-          ...this.options.args!,
-        );
-      } else {
-        if (this._timeLeft <= TIMEOUT_MAX) {
-          this._timer = globalThis.setTimeout(
-            (...args) => {
-              this.cb(...(args as T));
-
-              this._timeLeft = this.delay;
-            },
-            this._timeLeft,
-            ...this.options.args!,
-          );
-        } else {
-          this._timer = globalThis.setTimeout(
-            () => {
-              this._timeLeft -= TIMEOUT_MAX;
-
-              this.run();
-            },
-            TIMEOUT_MAX,
-            ...this.options.args!,
-          );
-        }
-      }
-
-      if (this._persistent) {
-        this.unref();
-      }
-
-      this._running = true;
-    }
-
-    return this._timer!;
-  }
-
-  abort(reason?: any) {
-    this._running = false;
-    const exception = new AbortException(reason);
-
-    this._resolveAborted(exception);
-
-    globalThis.clearTimeout(this._timer);
+export class AbortException extends DOMException {
+  constructor(public cause?: any) {
+    super("Delay was aborted.", "AbortError");
   }
 }
 
@@ -389,6 +191,9 @@ export function pTimeout<T>(options: Parameters<typeof origPTimeout<T>>[0]) {
     },
   });
 }
+
+export { Interval, Timeout };
+export type { IntervalOptions, TimeoutOptions };
 
 export {
   clearInterval as clearLongInterval,
