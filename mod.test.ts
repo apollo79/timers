@@ -27,9 +27,13 @@ const noop = () => {};
 describe("basic functionality", () => {
   describe("setTimeout", () => {
     it("basic", async () => {
+      const start = new Date();
       let i = 0;
 
       setTimeout(() => {
+        const diff = new Date().getTime() - start.getTime();
+
+        assert(diff >= 100);
         i++;
       }, 100);
 
@@ -69,10 +73,18 @@ describe("basic functionality", () => {
 
   describe("setInterval and clearInterval", () => {
     it("basic", async () => {
+      let start = new Date();
       let i = 0;
 
       const intervalId = setInterval(() => {
         i++;
+
+        const now = new Date(),
+          diff = now.getTime() - start.getTime();
+
+        assert(diff >= 100);
+
+        start = now;
       }, 100);
 
       assertStrictEquals(i, 0);
@@ -117,16 +129,16 @@ describe("advanced functionality", () => {
         persistent: false,
       });
 
-      timeout.run();
+      timeout.ref();
+      assert(!timeout.persistent);
 
+      timeout.run();
       assert(!timeout.persistent);
 
       timeout.ref();
-
       assert(timeout.persistent);
 
       timeout.unref();
-
       assert(!timeout.persistent);
 
       await stdDelay(110);
@@ -190,27 +202,27 @@ describe("advanced functionality", () => {
 
     describe("errors", () => {
       it("throws if already running", async () => {
-        const timeout = new Timeout(() => {}, 100);
+        const timeout = new Timeout(noop, 100);
 
         timeout.run();
 
         assertThrows(() => timeout.run(), "The timeout is already running");
 
-        await stdDelay(100);
+        await stdDelay(110);
       });
 
       it("throws if it ran already", async () => {
-        const timeout = new Timeout(() => {}, 100);
+        const timeout = new Timeout(noop, 100);
 
         timeout.run();
 
-        assertThrows(() => timeout.run(), "The timeout ran already");
+        await stdDelay(110);
 
-        await stdDelay(100);
+        assertThrows(() => timeout.run(), "The timeout ran already");
       });
 
       it("throws if it has been aborted", async () => {
-        const timeout = new Timeout(() => {}, 100);
+        const timeout = new Timeout(noop, 100);
 
         timeout.run();
 
@@ -354,9 +366,9 @@ describe("advanced functionality", () => {
 
           interval.run();
 
-          assertThrows(() => interval.run(), "The timeout ran already");
+          await stdDelay(110);
 
-          await stdDelay(100);
+          assertThrows(() => interval.run(), "The timeout ran already");
 
           interval.abort();
         });
@@ -378,7 +390,7 @@ describe("advanced functionality", () => {
       });
     });
 
-    it("times", async () => {
+    it("times option", async () => {
       let i = 0;
 
       const interval = new Interval(
