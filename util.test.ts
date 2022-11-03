@@ -9,6 +9,7 @@ const values = {
   "5d": 432_000_000,
   "1days 50sec": 86_450_000,
   "45day and 373hours, 3 minutes": 5_230_980_000,
+  "4.5h": 16_200_000,
 };
 
 describe("strToMs", () => {

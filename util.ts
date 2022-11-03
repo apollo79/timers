@@ -51,7 +51,7 @@ export function strToMs(str: string): number {
   let match = null;
 
   while ((match = regexp.exec(str))) {
-    const quantity = parseInt(match[1])!;
+    const quantity = parseFloat(match[1])!;
 
     const epoch = match[2]! as Epoch;
 
