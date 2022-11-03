@@ -47,7 +47,7 @@ export function clearInterval(id?: number) {
 
 /**
  * Resolves after the given number of milliseconds.
- * @param ms milliseconds to wait
+ * @param delay the delay as string containing the time in a human readable format (e.g. "1 day and 3hours") or a number of in milliseconds
  *
  * ```ts
  * const MSG = "Please type your name";
@@ -66,11 +66,11 @@ export function clearInterval(id?: number) {
 ```
  */
 export function delay(
-  ms: number,
+  delay: number | string,
   options: Omit<TimeoutOptions, "args"> = {},
 ): Promise<void> {
   return new Promise((resolve, reject) => {
-    const timeout = new Timeout(resolve, ms, options);
+    const timeout = new Timeout(resolve, delay, options);
 
     timeout.aborted.then(reject);
 
@@ -108,7 +108,7 @@ export function delay(
  */
 export function times<T extends any[] = any[]>(
   cb: Listener<T>,
-  delay: number,
+  delay: number | string,
   times: number,
   options: Omit<IntervalOptions<T>, "times"> = {},
 ) {
@@ -125,12 +125,12 @@ export function times<T extends any[] = any[]>(
 /**
  * A typed version of {@linkcode setTimeout}
  * @param cb the callback to call
- * @param delay the delay in milliseconds
+ * @param delay the delay as string containing the time in a human readable format (e.g. "1 day and 3hours") or a number of in milliseconds
  * @param options {@linkcode TimeoutOptions}
  */
 export function timeout<T extends any[] = any[]>(
   cb: Listener<T>,
-  delay?: number,
+  delay?: number | string,
   options: TimeoutOptions<T> = {},
 ) {
   const interval = new Timeout<T>(cb, delay, options);
@@ -148,7 +148,7 @@ export function timeout<T extends any[] = any[]>(
  */
 export function interval<T extends any[] = any[]>(
   cb: Listener<T>,
-  delay?: number,
+  delay?: number | string,
   options: IntervalOptions<T> = {},
 ) {
   const interval = new Interval<T>(cb, delay, options);

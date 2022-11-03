@@ -124,6 +124,25 @@ describe("basic functionality", () => {
 
 describe("advanced functionality", () => {
   describe("Timeout", () => {
+    it("string time", async () => {
+      const start = new Date();
+      let i = 0;
+
+      const timeout = new Timeout(() => {
+        const diff = new Date().getTime() - start.getTime();
+
+        assert(diff >= 100);
+
+        i++;
+      }, "100 ms");
+
+      timeout.run();
+
+      await stdDelay(110);
+
+      assertStrictEquals(i, 1);
+    });
+
     it("persistent property", async () => {
       const timeout = new Timeout(noop, 100, {
         persistent: false,
@@ -390,6 +409,34 @@ describe("advanced functionality", () => {
       });
     });
 
+    it("string time", async () => {
+      let start = new Date();
+      let i = 0;
+
+      const interval = new Interval(() => {
+        const now = new Date(),
+          diff = now.getTime() - start.getTime();
+
+        assert(diff >= 100);
+
+        start = now;
+
+        i++;
+      }, " 200milliseconds");
+
+      interval.run();
+
+      await stdDelay(210);
+
+      assertStrictEquals(i, 1);
+
+      await stdDelay(210);
+
+      assertStrictEquals(i, 2);
+
+      interval.abort();
+    });
+
     it("times option", async () => {
       let i = 0;
 
@@ -453,7 +500,7 @@ describe("advanced functionality", () => {
       const start = new Date();
       const abort = new AbortController();
       const { signal } = abort;
-      const delayedPromise = delay(100, { signal });
+      const delayedPromise = delay("100  ms", { signal });
 
       setTimeout(() => abort.abort(), 0);
 
@@ -473,7 +520,7 @@ describe("advanced functionality", () => {
       const abort = new AbortController();
       const { signal } = abort;
 
-      const delayedPromise = delay(100, { signal }); // abort.abort()
+      const delayedPromise = delay("100 milliseconds", { signal }); // abort.abort()
       const result = await delayedPromise;
 
       const diff = new Date().getTime() - start.getTime();
@@ -519,24 +566,46 @@ describe("advanced functionality", () => {
     });
   });
 
-  it("times", async () => {
-    let i = 0;
+  describe("times", () => {
+    it("basic", async () => {
+      let i = 0;
 
-    times(
-      () => {
-        i++;
+      times(
+        () => {
+          i++;
 
-        if (i > 5) {
-          unreachable();
-        }
-      },
-      100,
-      5,
-    );
+          if (i > 5) {
+            unreachable();
+          }
+        },
+        100,
+        5,
+      );
 
-    for (let i = 0; i <= 7; i++) {
-      await stdDelay(110);
-    }
+      for (let i = 0; i <= 7; i++) {
+        await stdDelay(110);
+      }
+    });
+
+    it("time string", async () => {
+      let i = 0;
+
+      times(
+        () => {
+          i++;
+
+          if (i > 5) {
+            unreachable();
+          }
+        },
+        "100 ms",
+        5,
+      );
+
+      for (let i = 0; i <= 7; i++) {
+        await stdDelay(110);
+      }
+    });
   });
 
   it("pTimeout", async () => {

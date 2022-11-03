@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-explicit-any
 import { Base, BaseOptions } from "./Base.ts";
 import { AbortException, Listener, TIMEOUT_MAX } from "./mod.ts";
 
@@ -28,7 +29,7 @@ export class Interval<T extends any[] = any[]> extends Base<T> {
    */
   constructor(
     cb: Listener<T>,
-    delay: number = 0,
+    delay: number | string = 0,
     options: IntervalOptions<T> = {},
   ) {
     super(cb, delay, options);

@@ -1,5 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 import { AbortException, Listener } from "./mod.ts";
+import { strToMs } from "./util.ts";
 
 export interface BaseOptions<T extends any[] = any[]> {
   args?: T;
@@ -25,6 +26,7 @@ export abstract class Base<T extends any[] = any[]> {
   protected _resolveAborted!: (value: AbortException) => void;
   /** A boolean value that indicates whether the timer has been aborted */
   protected _isAborted = false;
+  public readonly delay: number;
 
   /** Indicates whether the process should continue to run as long as the timer exists. This is `true` by default. */
   get persistent() {
@@ -61,9 +63,11 @@ export abstract class Base<T extends any[] = any[]> {
    */
   constructor(
     public readonly cb: Listener<T>,
-    public readonly delay: number,
+    delay: number | string,
     options: BaseOptions<T>,
   ) {
+    this.delay = typeof delay === "number" ? delay : strToMs(delay);
+
     this._timeLeft = this.delay;
 
     const { signal, args, persistent } = options;
@@ -75,8 +79,6 @@ export abstract class Base<T extends any[] = any[]> {
       persistent: this._persistent,
       ...options,
     };
-
-    this._timeLeft = delay;
 
     this.aborted = new Promise<AbortException>((resolve) => {
       this._resolveAborted = (exception: AbortException) => {
