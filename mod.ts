@@ -3,6 +3,7 @@
  * This module is browser compatible
  */
 import origPTimeout from "https://deno.land/x/p_timeout@1.0.2/mod.ts";
+import { After } from "./After.ts";
 import { timers } from "./Base.ts";
 import { Every } from "./Every.ts";
 import { Interval, IntervalOptions } from "./Interval.ts";
@@ -185,8 +186,22 @@ export function pTimeout<T>(options: Parameters<typeof origPTimeout<T>>[0]) {
   });
 }
 
+/**
+ * @todo document, write tests and add to Readme
+ * @param time
+ * @returns
+ */
 export function every(time: string | number) {
   return new Every(time);
+}
+
+/**
+ * @todo document, write tests and add to Readme
+ * @param time
+ * @returns
+ */
+export function after(time: string | number) {
+  return new After(time);
 }
 
 export { Interval, Timeout };
