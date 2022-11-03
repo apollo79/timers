@@ -16,8 +16,6 @@ export abstract class Base<T extends any[] = any[]> {
   /** The timer Id */
   protected _timer?: number;
   protected _timeLeft!: number;
-  /** Indicates whether the timer ran already */
-  protected _ran = false;
   /** Indicates whether the timer is currently running */
   protected _running = false;
   readonly options: BaseOptions<T>;
@@ -36,11 +34,6 @@ export abstract class Base<T extends any[] = any[]> {
   /** The timer Id */
   get timer() {
     return this._timer;
-  }
-
-  /** Indicates whether the timer ran already */
-  get ran() {
-    return this._ran;
   }
 
   /** Indicates whether the timer is currently running */

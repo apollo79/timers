@@ -198,7 +198,6 @@ the abort happens with a call of the `abort` method or the abortion via an
 `persistent` (only available in Deno): A boolean indicating whether the process
 should continues running as long as the timer exists. This is `true` by default\
 `timer`: The Id of the timer\
-`ran`: A boolean indicating whether the timeout has already run\
 `running`: A boolean indicating whether the timeout is currently running
 
 ##### Interval only

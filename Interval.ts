@@ -47,8 +47,6 @@ export class Interval<T extends any[] = any[]> extends Base<T> {
   run(): number {
     if (this._running) {
       throw new Error("The interval is already running");
-    } else if (this._ran) {
-      throw new Error("The interval ran already");
     } else if (this._isAborted) {
       throw new Error("The interval has been aborted before running");
     } else {

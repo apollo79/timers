@@ -47,8 +47,6 @@ export class Timeout<T extends any[] = any[]> extends Base<T> {
   run(): number {
     if (this._running) {
       throw new Error("The timeout is already running");
-    } else if (this._ran) {
-      throw new Error("The timeout ran already");
     } else if (this._isAborted) {
       throw new Error("The timeout has been aborted before running");
     } else {
@@ -60,7 +58,6 @@ export class Timeout<T extends any[] = any[]> extends Base<T> {
             this.options.signal?.removeEventListener("abort", this.abort);
 
             this._running = false;
-            this._ran = true;
           },
           this._timeLeft,
           ...this.options.args!,
