@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 import { Base, BaseOptions } from "./Base.ts";
-import { AbortException, Listener, TIMEOUT_MAX } from "./mod.ts";
+import { Listener, TIMEOUT_MAX } from "./mod.ts";
 
 export interface IntervalOptions<T extends any[] = any[]>
   extends BaseOptions<T> {
@@ -16,6 +16,13 @@ export class Interval<T extends any[] = any[]> extends Base<T> {
 
   get runs() {
     return this._runs;
+  }
+
+  /**
+   * @deprecated is never true with Interval
+   */
+  get ran() {
+    return false;
   }
 
   /**
@@ -45,70 +52,44 @@ export class Interval<T extends any[] = any[]> extends Base<T> {
   }
 
   run(): number {
-    if (this._running) {
-      throw new Error("The interval is already running");
-    } else if (this._isAborted) {
+    if (this._isAborted) {
       throw new Error("The interval has been aborted before running");
     } else {
-      if (this.delay <= TIMEOUT_MAX) {
-        this._timer = globalThis.setInterval(
-          (...args) => {
-            // order is important!
-            // first update
-            this._runs++;
+      if (this._timeLeft <= TIMEOUT_MAX) {
+        this._timer = globalThis.setTimeout(() => {
+          // order is important!
+          // first update
+          this._runs++;
 
-            // then call the callback
-            this.cb(...(args as T));
+          // then call the callback
 
-            // if the runs are finished, abort
-            if (this._runs! === this.options.times!) {
-              this.abort();
-            }
-          },
-          this.delay,
-          ...this.options.args!,
-        );
+          this.cb(...this.options.args!);
+
+          globalThis.clearTimeout(this._timer);
+
+          // if the runs are finished, abort
+          if (this._runs! === this.options.times!) {
+            this.abort();
+          } // else continue running
+          else {
+            this.run();
+          }
+        }, this._timeLeft);
       } else {
-        if (this._timeLeft <= TIMEOUT_MAX) {
-          this._timer = globalThis.setTimeout(
-            (...args) => {
-              this.cb(...(args as T));
+        this._timer = globalThis.setTimeout(() => {
+          this._timeLeft -= TIMEOUT_MAX;
 
-              this._timeLeft = this.delay;
-            },
-            this._timeLeft,
-            ...this.options.args!,
-          );
-        } else {
-          this._timer = globalThis.setTimeout(
-            () => {
-              this._timeLeft -= TIMEOUT_MAX;
+          globalThis.clearTimeout(this._timer);
 
-              this.run();
-            },
-            TIMEOUT_MAX,
-            ...this.options.args!,
-          );
-        }
+          this.run();
+        }, TIMEOUT_MAX);
       }
 
-      if (this._persistent) {
+      if (!this._persistent) {
         this.unref();
       }
-
-      this._running = true;
     }
 
-    return this._timer!;
-  }
-
-  abort(reason?: any) {
-    this._running = false;
-
-    const exception = new AbortException(reason);
-
-    this._resolveAborted(exception);
-
-    globalThis.clearTimeout(this._timer);
+    return this.id;
   }
 }

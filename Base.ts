@@ -9,14 +9,26 @@ export interface BaseOptions<T extends any[] = any[]> {
   persistent?: boolean;
 }
 
+let nextId = 1;
+
+export const timers: Map<number, Base> = new Map();
+
 // shared functionality
 export abstract class Base<T extends any[] = any[]> {
+  public readonly id: number;
   /** Indicates whether the process should continue to run as long as the timer exists. This is `true` by default. */
   protected _persistent: boolean;
   /** The timer Id */
   protected _timer?: number;
   protected _timeLeft!: number;
-  /** Indicates whether the timer is currently running */
+  /**
+   * Indicates whether the timer ran already
+   * @deprecated
+   */
+  protected _ran = false;
+  /**
+   * Indicates whether the timer is currently running
+   */
   protected _running = false;
   readonly options: BaseOptions<T>;
   /** A Promise, that resolves when the timer gets aborted */
@@ -31,12 +43,18 @@ export abstract class Base<T extends any[] = any[]> {
     return this._persistent;
   }
 
-  /** The timer Id */
+  /**
+   * The timer Id
+   * @deprecated Don't use this as it doesn't represent the timer Id you should use with `clearTimeout` and `clearInterval`
+   */
   get timer() {
-    return this._timer;
+    return this.id;
   }
 
-  /** Indicates whether the timer is currently running */
+  /**
+   * Indicates whether the timer is currently running
+   * @deprecated
+   */
   get running() {
     return this._running;
   }
@@ -57,13 +75,19 @@ export abstract class Base<T extends any[] = any[]> {
   constructor(
     public readonly cb: Listener<T>,
     delay: number | string,
-    options: BaseOptions<T>,
+    options: BaseOptions<T> & {
+      prevId?: number;
+    },
   ) {
     this.delay = typeof delay === "number" ? delay : strToMs(delay);
 
     this._timeLeft = this.delay;
 
-    const { signal, args, persistent } = options;
+    const { signal, args, persistent, prevId } = options;
+
+    this.id = prevId === undefined ? nextId++ : prevId;
+
+    timers.set(this.id, this as unknown as Base);
 
     this._persistent = persistent ?? true;
 
@@ -140,5 +164,18 @@ export abstract class Base<T extends any[] = any[]> {
    * aborts the timer
    * @param reason
    */
-  abstract abort(reason?: any): void;
+  abort(reason?: any) {
+    this._running = false;
+
+    timers.delete(this.id);
+
+    const exception = new AbortException(reason);
+
+    this._resolveAborted(exception);
+
+    // clearTimeout and clearInterval are interchangeable, this is ugly, but works
+    globalThis.clearTimeout(this._timer);
+
+    this._timer = undefined;
+  }
 }

@@ -3,6 +3,7 @@
  * This module is browser compatible
  */
 import origPTimeout from "https://deno.land/x/p_timeout@1.0.2/mod.ts";
+import { timers } from "./Base.ts";
 import { Every } from "./Every.ts";
 import { Interval, IntervalOptions } from "./Interval.ts";
 import { Timeout, TimeoutOptions } from "./Timeout.ts";
@@ -22,9 +23,7 @@ export function setTimeout(cb: Listener, delay?: number, ...args: any[]) {
     args,
   });
 
-  timeout.run();
-
-  return timeout.timer!;
+  return timeout.run();
 }
 
 export function setInterval(cb: Listener, delay?: number, ...args: any[]) {
@@ -32,17 +31,17 @@ export function setInterval(cb: Listener, delay?: number, ...args: any[]) {
     args,
   });
 
-  interval.run();
-
-  return interval.timer!;
+  return interval.run();
 }
 
 export function clearTimeout(id?: number) {
-  globalThis.clearTimeout(id);
+  if (id !== undefined) {
+    timers.get(id)?.abort();
+  }
 }
 
 export function clearInterval(id?: number) {
-  globalThis.clearInterval(id);
+  clearTimeout(id);
 }
 
 /**
@@ -135,9 +134,7 @@ export function timeout<T extends any[] = any[]>(
 ) {
   const interval = new Timeout<T>(cb, delay, options);
 
-  interval.run();
-
-  return interval.timer!;
+  return interval.run();
 }
 
 /**
@@ -153,9 +150,7 @@ export function interval<T extends any[] = any[]>(
 ) {
   const interval = new Interval<T>(cb, delay, options);
 
-  interval.run();
-
-  return interval.timer!;
+  return interval.run();
 }
 
 /**
@@ -190,6 +185,10 @@ export function pTimeout<T>(options: Parameters<typeof origPTimeout<T>>[0]) {
       setTimeout,
     },
   });
+}
+
+export function every(time: string | number) {
+  return new Every(time);
 }
 
 export { Interval, Timeout };

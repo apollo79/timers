@@ -32,10 +32,16 @@ With `timers` it is possible to have a timeout or interval that is longer than
 
 For this usecase `timers` exports two functions: `setTimeout` and `setInterval`.
 
-They are completely compatible with the Web API's functions.
+They are completely compatible with the Web API's functions, but it is not
+allowed to pass a string to one of the functions.
 
-For completeness, clearTimeout and clearInterval are exported as well, but they
-are just the native methods.
+clearTimeout and clearInterval are exported as well.
+
+#### **Important Note**
+
+_You can't use the native functions mixed with the functions exported by this
+module! So, if you import `setTimeout`, you should import `clearTimeout` as
+well, as the native function won't clear the timeout!_
 
 ```ts
 import {
@@ -191,14 +197,22 @@ available in Deno) and `args`, for `Interval` additionally `times`.
 #### Properties
 
 (Note: the word timeout will be used for both timeout and interval)\
+`id`: The Id of the timer, can be used with `clearTimeout` and `clearInterval`
 `aborted`: A Promise, that resolves, when the timeout gets aborted, but only, if
 the abort happens with a call of the `abort` method or the abortion via an
 `AbortController`.\
 `isAborted`: A boolean indicating whether the timeout has been aborted.\
 `persistent` (only available in Deno): A boolean indicating whether the process
 should continues running as long as the timer exists. This is `true` by default\
-`timer`: The Id of the timer\
-`running`: A boolean indicating whether the timeout is currently running
+_deprecated_: `timer`: The Id of the timer. Use `id` instead\
+_deprecated_: `ran`: A boolean indicating whether the timeout ran already. Only
+available for `Timeout`\
+_deprecated_: `running`: A boolean indicating whether the timeout is currently
+running
+
+##### Timeout only
+
+`ran`: A boolean indicating whether the timeout ran already.
 
 ##### Interval only
 
@@ -213,12 +227,8 @@ should continues running as long as the timer exists. This is `true` by default\
 
 ##### **NOTE**
 
-_It is highly recommended to avoid using `clearTimeout` or `clearInterval` with
-an instance of Timeout or Interval, as those won't set `running`, `ran`,
-`isAborted` and `abort`, so you lose warranty that those properties are up to
-date! Use the `abort` method or an `AbortController` instead. It is also not
-recommended to use `Deno.refTimer()` and `Deno.unrefTimer()`, as they make the
-`persistent` property inconsistent_
+_It is not possible to use Deno.unrefTimer() or Deno.refTimer() directly with
+the id returned by setInterval or setTimeout_
 
 ## Running Tests
 

@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 import { Base, BaseOptions } from "./Base.ts";
-import { AbortException, Listener, TIMEOUT_MAX } from "./mod.ts";
+import { Listener, TIMEOUT_MAX } from "./mod.ts";
 
 // deno-lint-ignore no-empty-interface
 export interface TimeoutOptions<T extends any[] = any[]>
@@ -28,6 +28,12 @@ export interface TimeoutOptions<T extends any[] = any[]>
 export class Timeout<T extends any[] = any[]> extends Base<T> {
   declare readonly options: TimeoutOptions<T>;
 
+  protected _ran = false;
+
+  get ran() {
+    return this._ran;
+  }
+
   /**
    * @param cb The callback to get executed
    * @param delay The time to delay
@@ -45,51 +51,37 @@ export class Timeout<T extends any[] = any[]> extends Base<T> {
   }
 
   run(): number {
-    if (this._running) {
-      throw new Error("The timeout is already running");
-    } else if (this._isAborted) {
+    if (this._isAborted) {
       throw new Error("The timeout has been aborted before running");
     } else {
       if (this._timeLeft <= TIMEOUT_MAX) {
-        this._timer = globalThis.setTimeout(
-          (...args) => {
-            this.cb?.(...(args as T));
+        this._timer = globalThis.setTimeout(() => {
+          this.cb(...this.options.args!);
 
-            this.options.signal?.removeEventListener("abort", this.abort);
+          this.options.signal?.removeEventListener("abort", this.abort);
 
-            this._running = false;
-          },
-          this._timeLeft,
-          ...this.options.args!,
-        );
+          this._running = false;
+          this._ran = true;
+        }, this._timeLeft);
       } else {
-        this._timer = globalThis.setTimeout(
-          () => {
-            this._timeLeft -= TIMEOUT_MAX;
-            this.run();
-          },
-          TIMEOUT_MAX,
-          ...this.options.args!,
-        );
+        this._timer = globalThis.setTimeout(() => {
+          this._timeLeft -= TIMEOUT_MAX;
+
+          globalThis.clearTimeout(this._timer);
+
+          this._timer = undefined;
+
+          this.run();
+        }, TIMEOUT_MAX);
+      }
+
+      if (!this._persistent) {
+        this.unref();
       }
 
       this._running = true;
     }
 
-    if (!this._persistent) {
-      this.unref();
-    }
-
-    return this.timer!;
-  }
-
-  abort(reason?: any) {
-    this._running = false;
-
-    const exception = new AbortException(reason);
-
-    this._resolveAborted(exception);
-
-    globalThis.clearTimeout(this._timer);
+    return this.id;
   }
 }
