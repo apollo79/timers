@@ -50,32 +50,43 @@ export class Timeout<T extends any[] = any[]> extends Base<T> {
     super(cb, delay, options);
   }
 
+  /**
+   * private run method to deal with `_running` property, as the method may call itself
+   */
+  #run() {
+    if (this._timeLeft <= TIMEOUT_MAX) {
+      this._timer = globalThis.setTimeout(() => {
+        this.cb(...this.options.args!);
+
+        this.options.signal?.removeEventListener("abort", this.abort);
+
+        this._running = false;
+        this._ran = true;
+      }, this._timeLeft);
+    } else {
+      this._timer = globalThis.setTimeout(() => {
+        this._timeLeft -= TIMEOUT_MAX;
+
+        globalThis.clearTimeout(this._timer);
+
+        this._timer = undefined;
+
+        this.#run();
+      }, TIMEOUT_MAX);
+    }
+  }
+
   run(): number {
-    if (this._isAborted) {
+    if (this._running) {
       console.warn(
-        "The timer has been aborted. The call to run will be ignored",
+        "The timeout is already running. The call to run will be ignored",
+      );
+    } else if (this._isAborted) {
+      console.warn(
+        "The timeout has been aborted. The call to run will be ignored",
       );
     } else {
-      if (this._timeLeft <= TIMEOUT_MAX) {
-        this._timer = globalThis.setTimeout(() => {
-          this.cb(...this.options.args!);
-
-          this.options.signal?.removeEventListener("abort", this.abort);
-
-          this._running = false;
-          this._ran = true;
-        }, this._timeLeft);
-      } else {
-        this._timer = globalThis.setTimeout(() => {
-          this._timeLeft -= TIMEOUT_MAX;
-
-          globalThis.clearTimeout(this._timer);
-
-          this._timer = undefined;
-
-          this.run();
-        }, TIMEOUT_MAX);
-      }
+      this.#run();
 
       if (!this._persistent) {
         this.unref();

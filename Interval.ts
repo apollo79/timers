@@ -51,45 +51,58 @@ export class Interval<T extends any[] = any[]> extends Base<T> {
     this._runs = 0;
   }
 
+  /**
+   * private run method to deal with `_running` property, as the method may call itself
+   */
+  #run() {
+    if (this._timeLeft <= TIMEOUT_MAX) {
+      this._timer = globalThis.setTimeout(() => {
+        // order is important!
+        // first update
+        this._runs++;
+
+        // then call the callback
+
+        this.cb(...this.options.args!);
+
+        globalThis.clearTimeout(this._timer);
+
+        // if the runs are finished, abort
+        if (this._runs! === this.options.times!) {
+          this.abort();
+        } // else continue running
+        else {
+          this.#run();
+        }
+      }, this._timeLeft);
+    } else {
+      this._timer = globalThis.setTimeout(() => {
+        this._timeLeft -= TIMEOUT_MAX;
+
+        globalThis.clearTimeout(this._timer);
+
+        this.#run();
+      }, TIMEOUT_MAX);
+    }
+  }
+
   run(): number {
-    if (this._isAborted) {
+    if (this._running) {
       console.warn(
-        "The timer has been aborted. The call to run will be ignored",
+        "The interval is already running. The call to run will be ignored",
+      );
+    } else if (this._isAborted) {
+      console.warn(
+        "The interval has been aborted. The call to run will be ignored",
       );
     } else {
-      if (this._timeLeft <= TIMEOUT_MAX) {
-        this._timer = globalThis.setTimeout(() => {
-          // order is important!
-          // first update
-          this._runs++;
-
-          // then call the callback
-
-          this.cb(...this.options.args!);
-
-          globalThis.clearTimeout(this._timer);
-
-          // if the runs are finished, abort
-          if (this._runs! === this.options.times!) {
-            this.abort();
-          } // else continue running
-          else {
-            this.run();
-          }
-        }, this._timeLeft);
-      } else {
-        this._timer = globalThis.setTimeout(() => {
-          this._timeLeft -= TIMEOUT_MAX;
-
-          globalThis.clearTimeout(this._timer);
-
-          this.run();
-        }, TIMEOUT_MAX);
-      }
+      this.#run();
 
       if (!this._persistent) {
         this.unref();
       }
+
+      this._running = true;
     }
 
     return this.id;

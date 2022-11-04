@@ -53,7 +53,6 @@ export abstract class Base<T extends any[] = any[]> {
 
   /**
    * Indicates whether the timer is currently running
-   * @deprecated
    */
   get running() {
     return this._running;

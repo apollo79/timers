@@ -16,7 +16,6 @@ import {
   assertEquals,
   assertRejects,
   assertStrictEquals,
-  assertThrows,
   unreachable,
 } from "https://deno.land/std@0.161.0/testing/asserts.ts";
 import { delay as stdDelay } from "https://deno.land/std@0.161.0/async/delay.ts";
@@ -317,10 +316,6 @@ describe("advanced functionality", () => {
 
             assert(diff < 100);
           });
-
-          assertThrows(() => {
-            timeout.run();
-          }, "The interval has been aborted before running");
 
           await stdDelay(110);
 
