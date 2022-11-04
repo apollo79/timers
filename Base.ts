@@ -75,17 +75,15 @@ export abstract class Base<T extends any[] = any[]> {
   constructor(
     public readonly cb: Listener<T>,
     delay: number | string,
-    options: BaseOptions<T> & {
-      prevId?: number;
-    },
+    options: BaseOptions<T>,
   ) {
     this.delay = typeof delay === "number" ? delay : strToMs(delay);
 
     this._timeLeft = this.delay;
 
-    const { signal, args, persistent, prevId } = options;
+    const { signal, args, persistent } = options;
 
-    this.id = prevId === undefined ? nextId++ : prevId;
+    this.id = nextId++;
 
     timers.set(this.id, this as unknown as Base);
 
