@@ -35,13 +35,11 @@ export function setInterval(cb: Listener, delay?: number, ...args: any[]) {
   return interval.run();
 }
 
-export function clearTimeout(id?: number) {
-  if (id !== undefined) {
-    timers.get(id)?.abort();
-  }
+export function clearTimeout(id = 0) {
+  timers.get(id)?.abort();
 }
 
-export function clearInterval(id?: number) {
+export function clearInterval(id = 0) {
   clearTimeout(id);
 }
 
@@ -204,7 +202,7 @@ export function after(time: string | number) {
   return new After(time);
 }
 
-export { Interval, Timeout };
+export { After, Every, Interval, Timeout };
 export type { IntervalOptions, TimeoutOptions };
 
 export {

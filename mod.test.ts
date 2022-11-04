@@ -216,23 +216,6 @@ describe("advanced functionality", () => {
         assert(timeout.isAborted);
       });
     });
-
-    describe("errors", () => {
-      it("throws if it has been aborted", async () => {
-        const timeout = new Timeout(noop, 100);
-
-        timeout.run();
-
-        timeout.abort();
-
-        assertThrows(
-          () => timeout.run(),
-          "The timeout has been aborted before running",
-        );
-
-        await stdDelay(100);
-      });
-    });
   });
 
   describe("Interval", () => {
@@ -342,23 +325,6 @@ describe("advanced functionality", () => {
           await stdDelay(110);
 
           assertStrictEquals(i, 0);
-        });
-      });
-
-      describe("errors", () => {
-        it("throws if it has been aborted", async () => {
-          const timeout = new Timeout(() => {}, 100);
-
-          timeout.run();
-
-          timeout.abort();
-
-          assertThrows(
-            () => timeout.run(),
-            "The timeout has been aborted before running",
-          );
-
-          await stdDelay(100);
         });
       });
     });

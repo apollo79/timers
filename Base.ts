@@ -9,9 +9,9 @@ export interface BaseOptions<T extends any[] = any[]> {
   persistent?: boolean;
 }
 
-let nextId = 1;
+export const timers = new Map<number, Base>();
 
-export const timers: Map<number, Base> = new Map();
+let nextId = 1;
 
 // shared functionality
 export abstract class Base<T extends any[] = any[]> {
@@ -163,16 +163,16 @@ export abstract class Base<T extends any[] = any[]> {
    * @param reason
    */
   abort(reason?: any) {
-    this._running = false;
+    // clearTimeout and clearInterval are interchangeable, this is ugly, but works
+    globalThis.clearTimeout(this._timer);
 
-    timers.delete(this.id);
+    this._running = false;
 
     const exception = new AbortException(reason);
 
     this._resolveAborted(exception);
 
-    // clearTimeout and clearInterval are interchangeable, this is ugly, but works
-    globalThis.clearTimeout(this._timer);
+    timers.delete(this.id);
 
     this._timer = undefined;
   }

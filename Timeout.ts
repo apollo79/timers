@@ -52,7 +52,9 @@ export class Timeout<T extends any[] = any[]> extends Base<T> {
 
   run(): number {
     if (this._isAborted) {
-      throw new Error("The timeout has been aborted before running");
+      console.warn(
+        "The timer has been aborted. The call to run will be ignored",
+      );
     } else {
       if (this._timeLeft <= TIMEOUT_MAX) {
         this._timer = globalThis.setTimeout(() => {
