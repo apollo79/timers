@@ -165,12 +165,19 @@ export abstract class Base<T extends any[] = any[]> {
   abstract run(): number;
 
   /**
+   * clear without resolve {@linkcode Base.aborted}
+   */
+  protected clear() {
+    // clearTimeout and clearInterval are interchangeable, this is ugly, but works
+    globalThis.clearTimeout(this._timer);
+  }
+
+  /**
    * aborts the timer
    * @param reason
    */
-  abort(reason?: any) {
-    // clearTimeout and clearInterval are interchangeable, this is ugly, but works
-    globalThis.clearTimeout(this._timer);
+  abort = (reason?: any) => {
+    this.clear();
 
     this._running = false;
 
