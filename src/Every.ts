@@ -4,10 +4,9 @@ import { Interval, Listener } from "../mod.ts";
 export class Every {
   protected interval?: Interval<never[]>;
 
-  #times: number;
+  #times = Infinity;
 
   constructor(public readonly time: number | string) {
-    this.#times = Infinity;
   }
 
   times(times: number) {
@@ -31,9 +30,11 @@ export class Every {
       console.warn(
         "The interval is already running and gets cancelled now and restarts.",
       );
+
+      this.interval?.abort();
     }
 
-    this.interval = new Interval(cb, this.time, {
+    this.interval = new Interval(cb.bind(this), this.time, {
       times: this.#times,
     });
 

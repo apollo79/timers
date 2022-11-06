@@ -57,34 +57,29 @@ export class Interval<T extends any[] = any[]> extends Base<T> {
   #run() {
     if (this._timeLeft <= TIMEOUT_MAX) {
       this._timer = globalThis.setTimeout(() => {
-        // order is important!
-        // first update
-        this._runs++;
-
-        // then call the callback
-
-        this.cb(...this.options.args!);
-
-        globalThis.clearTimeout(this._timer);
+        this.clear();
 
         // if the runs are finished, abort
-        if (this._runs! === this.options.times!) {
+        if (this._runs! + 1 === this.options.times!) {
           this.options.signal?.removeEventListener("abort", this.abort);
-
-          this.clear();
 
           this._running = false;
           this._ran = true;
         } // else continue running
         else {
           this.#run();
+
+          this._runs++;
         }
+
+        // then call the callback
+        this.cb(...this.options.args!);
       }, this._timeLeft);
     } else {
       this._timer = globalThis.setTimeout(() => {
         this._timeLeft -= TIMEOUT_MAX;
 
-        globalThis.clearTimeout(this._timer);
+        this.clear();
 
         this.#run();
       }, TIMEOUT_MAX);
