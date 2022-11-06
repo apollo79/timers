@@ -4,7 +4,6 @@ import {
   clearTimeout,
   delay,
   Interval,
-  pTimeout,
   setInterval,
   setTimeout,
   Timeout,
@@ -19,7 +18,6 @@ import {
   unreachable,
 } from "https://deno.land/std@0.161.0/testing/asserts.ts";
 import { delay as stdDelay } from "https://deno.land/std@0.161.0/async/delay.ts";
-import { TimeoutError } from "https://deno.land/x/p_timeout@1.0.2/mod.ts";
 
 const noop = () => {};
 
