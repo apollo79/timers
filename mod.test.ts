@@ -544,24 +544,4 @@ describe("advanced functionality", () => {
       }
     });
   });
-
-  it("pTimeout", async () => {
-    let timeout: number;
-
-    const delayedPromise = new Promise((resolve) => {
-      timeout = setTimeout(resolve, 500);
-    });
-
-    await assertRejects(
-      () =>
-        pTimeout({
-          promise: delayedPromise,
-          milliseconds: 50,
-        }),
-      TimeoutError,
-      "Promise timed out after 50 milliseconds",
-    );
-
-    clearTimeout(timeout!);
-  });
 });
