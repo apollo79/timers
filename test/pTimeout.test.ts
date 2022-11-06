@@ -1,7 +1,3 @@
-// import delay from "delay";
-// import PCancelable from "p-cancelable";
-// import inRange from "in-range";
-// import timeSpan from "time-span";
 import {
   assert,
   assertRejects,
@@ -14,8 +10,8 @@ import {
   describe,
   it,
 } from "https://deno.land/std@0.161.0/testing/bdd.ts";
-import { AbortablePromise, AbortException, delay } from "./mod.ts";
-import pTimeout, { TimeoutError } from "./pTimeout.ts";
+import { AbortablePromise, AbortException, delay } from "../mod.ts";
+import pTimeout, { TimeoutError } from "../src/pTimeout.ts";
 
 const fixture = Symbol("fixture");
 const fixtureError = new Error("fixture");

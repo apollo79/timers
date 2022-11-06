@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-import { Listener, Timeout } from "./mod.ts";
+import { Listener, Timeout } from "../mod.ts";
 
 export class After {
   protected interval?: Timeout<never[]>;

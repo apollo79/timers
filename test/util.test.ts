@@ -1,6 +1,6 @@
 import { assertStrictEquals } from "https://deno.land/std@0.161.0/testing/asserts.ts";
 import { describe, it } from "https://deno.land/std@0.161.0/testing/bdd.ts";
-import { strToMs } from "./util.ts";
+import { strToMs } from "../src/util.ts";
 
 const values = {
   "45ms": 45,

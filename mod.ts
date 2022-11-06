@@ -2,11 +2,11 @@
 /**
  * This module is browser compatible
  */
-import { After } from "./After.ts";
-import { timers } from "./Base.ts";
-import { Every } from "./Every.ts";
-import { Interval, IntervalOptions } from "./Interval.ts";
-import { Timeout, TimeoutOptions } from "./Timeout.ts";
+import { After } from "./src/After.ts";
+import { timers } from "./src/Base.ts";
+import { Every } from "./src/Every.ts";
+import { Interval, IntervalOptions } from "./src/Interval.ts";
+import { Timeout, TimeoutOptions } from "./src/Timeout.ts";
 
 export type Listener<T extends any[] = any[]> = (...args: T) => void;
 
@@ -191,7 +191,8 @@ export function after(time: string | number) {
   return new After(time);
 }
 
-export { pTimeout } from "./pTimeout.ts";
+export { pTimeout, TimeoutError } from "./src/pTimeout.ts";
+export type { PTimeoutOptions } from "./src/pTimeout.ts";
 
 export { After, Every, Interval, Timeout };
 export type { IntervalOptions, TimeoutOptions };

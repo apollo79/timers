@@ -8,7 +8,7 @@ import {
   setTimeout,
   Timeout,
   times,
-} from "./mod.ts";
+} from "../mod.ts";
 import { describe, it } from "https://deno.land/std@0.161.0/testing/bdd.ts";
 import {
   assert,

@@ -1,7 +1,7 @@
 /**
  * Adapted version of https://github.com/sindresorhus/p-timeout and https://github.com/khrj/p-timeout
  */
-import { AbortablePromise, AbortException, Timeout } from "./mod.ts";
+import { AbortablePromise, AbortException, Timeout } from "../mod.ts";
 
 export class TimeoutError extends Error {
   constructor(message: string) {

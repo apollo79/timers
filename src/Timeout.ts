@@ -1,26 +1,35 @@
 // deno-lint-ignore-file no-explicit-any
 import { Base, BaseOptions } from "./Base.ts";
-import { Listener, TIMEOUT_MAX } from "./mod.ts";
+import { Listener, TIMEOUT_MAX } from "../mod.ts";
 
-export interface IntervalOptions<T extends any[] = any[]>
-  extends BaseOptions<T> {
-  times?: number;
-}
+// deno-lint-ignore no-empty-interface
+export interface TimeoutOptions<T extends any[] = any[]>
+  extends BaseOptions<T> {}
 
 /**
- * @class A class representing an Interval
+ * @class The class representing a timeout
+ * @example
+ * ```ts
+ * const abort = new AbortController();
+ * const { signal } = abort;
+ * const timeout = new Timeout(
+ *   () => {
+ *     console.log("hello world");
+ *   },
+ *   100,
+ *   { signal, }
+ * );
+ *
+ * timeout.run();
+ *
+ * yourService.addEventListener("error", () => abort.abort(), { once: true })
+ * ```
  */
-export class Interval<T extends any[] = any[]> extends Base<T> {
-  declare readonly options: IntervalOptions<T>;
-  protected _runs: number;
+export class Timeout<T extends any[] = any[]> extends Base<T> {
+  declare readonly options: TimeoutOptions<T>;
 
-  get runs() {
-    return this._runs;
-  }
+  protected _ran = false;
 
-  /**
-   * This will only be set to true, if the `times` options has been passed and the interval has run `times` often
-   */
   get ran() {
     return this._ran;
   }
@@ -32,23 +41,13 @@ export class Interval<T extends any[] = any[]> extends Base<T> {
    * @param options.args The arguments to get passed to the callback
    * @param options.signal An AbortSignal. It can abort the timer
    * @param options.persistent Indicates whether the process should continue to run as long as the timer exists. This is `true` by default.
-   * @param options.times How often the timer should run
    */
   constructor(
     cb: Listener<T>,
     delay: number | string = 0,
-    options: IntervalOptions<T> = {},
+    options: TimeoutOptions<T> = {},
   ) {
     super(cb, delay, options);
-
-    const { times } = options;
-
-    this.options = {
-      times: times ?? Infinity,
-      ...this.options,
-    };
-
-    this._runs = 0;
   }
 
   /**
@@ -57,34 +56,22 @@ export class Interval<T extends any[] = any[]> extends Base<T> {
   #run() {
     if (this._timeLeft <= TIMEOUT_MAX) {
       this._timer = globalThis.setTimeout(() => {
-        // order is important!
-        // first update
-        this._runs++;
-
-        // then call the callback
-
         this.cb(...this.options.args!);
 
-        globalThis.clearTimeout(this._timer);
+        this.options.signal?.removeEventListener("abort", this.abort);
 
-        // if the runs are finished, abort
-        if (this._runs! === this.options.times!) {
-          this.options.signal?.removeEventListener("abort", this.abort);
+        this._running = false;
+        this._ran = true;
 
-          this.clear();
-
-          this._running = false;
-          this._ran = true;
-        } // else continue running
-        else {
-          this.#run();
-        }
+        this.clear();
       }, this._timeLeft);
     } else {
       this._timer = globalThis.setTimeout(() => {
         this._timeLeft -= TIMEOUT_MAX;
 
         globalThis.clearTimeout(this._timer);
+
+        this._timer = undefined;
 
         this.#run();
       }, TIMEOUT_MAX);
@@ -94,11 +81,11 @@ export class Interval<T extends any[] = any[]> extends Base<T> {
   run(): number {
     if (this._running) {
       console.warn(
-        "The interval is already running. The call to run will be ignored",
+        "The timeout is already running. The call to run will be ignored",
       );
     } else if (this._isAborted) {
       console.warn(
-        "The interval has been aborted. The call to run will be ignored",
+        "The timeout has been aborted. The call to run will be ignored",
       );
     } else {
       this.#run();
