@@ -422,7 +422,7 @@ describe("advanced functionality", () => {
       await assertRejects(
         () => delayedPromise,
         DOMException,
-        "Delay was aborted",
+        "The timer was aborted.",
       );
 
       const diff = new Date().getTime() - start.getTime();
@@ -472,7 +472,29 @@ describe("advanced functionality", () => {
       await assertRejects(
         () => delayedPromise,
         AbortException,
-        "Delay was aborted",
+        "The timer was aborted.",
+      );
+
+      const diff = new Date().getTime() - start.getTime();
+
+      assert(diff < 100);
+    });
+
+    it("`clear()` method", async () => {
+      const start = new Date();
+      const abort = new AbortController();
+
+      abort.abort();
+
+      const { signal } = abort;
+      const delayedPromise = delay(100, { signal });
+
+      delayedPromise.abort();
+
+      await assertRejects(
+        () => delayedPromise,
+        AbortException,
+        "The timer was aborted.",
       );
 
       const diff = new Date().getTime() - start.getTime();
@@ -521,25 +543,5 @@ describe("advanced functionality", () => {
         await stdDelay(110);
       }
     });
-  });
-
-  it("pTimeout", async () => {
-    let timeout: number;
-
-    const delayedPromise = new Promise((resolve) => {
-      timeout = setTimeout(resolve, 500);
-    });
-
-    await assertRejects(
-      () =>
-        pTimeout({
-          promise: delayedPromise,
-          milliseconds: 50,
-        }),
-      TimeoutError,
-      "Promise timed out after 50 milliseconds",
-    );
-
-    clearTimeout(timeout!);
   });
 });

@@ -62,6 +62,8 @@ export class Timeout<T extends any[] = any[]> extends Base<T> {
 
         this._running = false;
         this._ran = true;
+
+        this.clear();
       }, this._timeLeft);
     } else {
       this._timer = globalThis.setTimeout(() => {

@@ -2,7 +2,6 @@
 /**
  * This module is browser compatible
  */
-import origPTimeout from "https://deno.land/x/p_timeout@1.0.2/mod.ts";
 import { After } from "./After.ts";
 import { timers } from "./Base.ts";
 import { Every } from "./Every.ts";
@@ -15,8 +14,15 @@ export const TIMEOUT_MAX = 2147483647; // 2^31-1
 
 export class AbortException extends DOMException {
   constructor(public cause?: any) {
-    super("Delay was aborted.", "AbortError");
+    super("The timer was aborted.", "AbortException");
   }
+}
+
+export interface AbortablePromise<T> extends Promise<T> {
+  /**
+   * Clear the timeout.
+   */
+  abort: () => void;
 }
 
 export function setTimeout(cb: Listener, delay?: number, ...args: any[]) {
@@ -66,9 +72,19 @@ export function clearInterval(id = 0) {
 export function delay(
   delay: number | string,
   options: Omit<TimeoutOptions, "args"> = {},
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const timeout = new Timeout(resolve, delay, options);
+): AbortablePromise<void> {
+  let timeout: Timeout | undefined;
+
+  const abortablePromise = new Promise((resolve, reject) => {
+    timeout = new Timeout(
+      () => {
+        abortablePromise.abort();
+
+        resolve();
+      },
+      delay,
+      options,
+    );
 
     timeout.aborted.then(reject);
 
@@ -77,7 +93,14 @@ export function delay(
     } catch (e) {
       reject(new AbortException(e));
     }
-  });
+  }) as AbortablePromise<void>;
+
+  abortablePromise.abort = () => {
+    timeout?.abort();
+    timeout = undefined;
+  };
+
+  return abortablePromise;
 }
 
 /**
@@ -151,40 +174,6 @@ export function interval<T extends any[] = any[]>(
 }
 
 /**
- * Timeout a promise after a specified amount of time.
- * @param options.promise - Promise to decorate.
- * @param options.milliseconds - Milliseconds before timing out.
- * @param options.fallbackFn - Do something other than rejecting with an error on timeout. You could for example retry.
- * @param options.failMessage - Specify a custom error message. Default: `'Promise timed out after 50 milliseconds'`.
- * @param options.failError - Specify a custom `Error`. It's recommended to sub-class `pTimeout.TimeoutError`.
- * @param options.customTimers - Specify custom implementations for the `setTimeout` and `clearTimeout` functions.
- * @returns A decorated `options.promise` that times out after `options.milliseconds` time. It has a `.clear()` method that clears the timeout.
- *
- * @example
- * ```ts
- * import pTimeout from './mod.ts'
- *
- * const delayedPromise = new Promise(resolve => setTimeout(resolve, 500))
- *
- * await pTimeout({
- *   promise: delayedPromise,
- *   milliseconds: 50
- * });
- *
- * //=> [TimeoutError: Promise timed out after 50 milliseconds]
- * ```
- */
-export function pTimeout<T>(options: Parameters<typeof origPTimeout<T>>[0]) {
-  return origPTimeout<T>({
-    ...options,
-    customTimers: {
-      clearTimeout,
-      setTimeout,
-    },
-  });
-}
-
-/**
  * @todo document, write tests and add to Readme
  * @param time
  * @returns
@@ -202,6 +191,8 @@ export function after(time: string | number) {
   return new After(time);
 }
 
+export { pTimeout } from "./pTimeout.ts";
+
 export { After, Every, Interval, Timeout };
 export type { IntervalOptions, TimeoutOptions };
 
@@ -213,4 +204,3 @@ export {
 };
 
 export { TimeoutError } from "https://deno.land/x/p_timeout@1.0.2/mod.ts";
-export type { ClearablePromise } from "https://deno.land/x/p_timeout@1.0.2/mod.ts";

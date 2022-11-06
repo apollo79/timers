@@ -145,26 +145,18 @@ times(
 
 ### `pTimeout`
 
-Timeout a promise after a specified amount of time. This function uses
-[p_timeout](https://deno.land/x/p_timeout@1.0.2) from
-[Khushraj Rathod](https://github.com/khrj) and uses the option to pass custom
-implementations for `setTimeout` and `clearTimeout` it provides.
+Adapted from [p-timeout](https://github.com/khrj/p-timeout)\
+Timeout a promise after a specified amount of time.
 
 ```ts
 import { pTimeout, setTimeout } from "https://deno.land/x/timers@0.1.0/mod.ts";
 
 const delayedPromise = new Promise((resolve) => setTimeout(resolve, 500));
 
-await pTimeout({
-  promise: delayedPromise,
-  milliseconds: 50,
-});
+await pTimeout(delayedPromise, 50);
 
 // => [TimeoutError: Promise timed out after 50 milliseconds]
 ```
-
-Example taken from the Readme of
-[p_timeout](https://deno.land/x/p_timeout@1.0.2)
 
 ### `timeout` and `interval`
 

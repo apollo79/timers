@@ -19,7 +19,7 @@ export class Interval<T extends any[] = any[]> extends Base<T> {
   }
 
   /**
-   * @deprecated is never true with Interval
+   * This will only be set to true, if the `times` options has been passed and the interval has run `times` often
    */
   get ran() {
     return false;
@@ -69,7 +69,12 @@ export class Interval<T extends any[] = any[]> extends Base<T> {
 
         // if the runs are finished, abort
         if (this._runs! === this.options.times!) {
-          this.abort();
+          this.options.signal?.removeEventListener("abort", this.abort);
+
+          this.clear();
+
+          this._running = false;
+          this._ran = true;
         } // else continue running
         else {
           this.#run();

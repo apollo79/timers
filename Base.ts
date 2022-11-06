@@ -16,24 +16,31 @@ let nextId = 1;
 // shared functionality
 export abstract class Base<T extends any[] = any[]> {
   public readonly id: number;
+
   /** Indicates whether the process should continue to run as long as the timer exists. This is `true` by default. */
   protected _persistent: boolean;
+
   /** The timer Id */
   protected _timer?: number;
+
   protected _timeLeft!: number;
+
   /**
    * Indicates whether the timer ran already
-   * @deprecated
    */
   protected _ran = false;
+
   /**
    * Indicates whether the timer is currently running
    */
   protected _running = false;
+
   readonly options: BaseOptions<T>;
   /** A Promise, that resolves when the timer gets aborted */
   readonly aborted: Promise<AbortException>;
+
   protected _resolveAborted!: (value: AbortException) => void;
+
   /** A boolean value that indicates whether the timer has been aborted */
   protected _isAborted = false;
   public readonly delay: number;
@@ -107,7 +114,7 @@ export abstract class Base<T extends any[] = any[]> {
 
       this._resolveAborted(exception);
     } else {
-      signal?.addEventListener("abort", () => this.abort(), {
+      signal?.addEventListener("abort", this.abort, {
         once: true,
       });
     }
@@ -158,12 +165,19 @@ export abstract class Base<T extends any[] = any[]> {
   abstract run(): number;
 
   /**
+   * clear without resolve {@linkcode Base.aborted}
+   */
+  protected clear() {
+    // clearTimeout and clearInterval are interchangeable, this is ugly, but works
+    globalThis.clearTimeout(this._timer);
+  }
+
+  /**
    * aborts the timer
    * @param reason
    */
-  abort(reason?: any) {
-    // clearTimeout and clearInterval are interchangeable, this is ugly, but works
-    globalThis.clearTimeout(this._timer);
+  abort = (reason?: any) => {
+    this.clear();
 
     this._running = false;
 
@@ -174,5 +188,7 @@ export abstract class Base<T extends any[] = any[]> {
     timers.delete(this.id);
 
     this._timer = undefined;
-  }
+
+    this.options.signal?.removeEventListener("abort", this.abort);
+  };
 }
