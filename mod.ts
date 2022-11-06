@@ -202,5 +202,3 @@ export {
   setInterval as setLongInterval,
   setTimeout as setLongTimeout,
 };
-
-export { TimeoutError } from "https://deno.land/x/p_timeout@1.0.2/mod.ts";
