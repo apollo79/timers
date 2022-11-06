@@ -6,7 +6,6 @@ import {
   Interval,
   setInterval,
   setTimeout,
-  Timeout,
   times,
 } from "../mod.ts";
 import { describe, it } from "https://deno.land/std@0.161.0/testing/bdd.ts";
@@ -18,8 +17,6 @@ import {
   unreachable,
 } from "https://deno.land/std@0.161.0/testing/asserts.ts";
 import { delay as stdDelay } from "https://deno.land/std@0.161.0/async/delay.ts";
-
-const noop = () => {};
 
 describe("basic functionality", () => {
   describe("setTimeout", () => {
@@ -118,428 +115,223 @@ describe("basic functionality", () => {
 });
 
 describe("advanced functionality", () => {
-  describe("Timeout", () => {
-    it("string time", async () => {
-      const start = new Date();
-      let i = 0;
+  it("string time", async () => {
+    let start = new Date();
+    let i = 0;
 
-      const timeout = new Timeout(() => {
-        const diff = new Date().getTime() - start.getTime();
+    const interval = new Interval(() => {
+      const now = new Date(),
+        diff = now.getTime() - start.getTime();
 
-        assert(diff >= 100);
+      assert(diff >= 100);
 
+      start = now;
+
+      i++;
+    }, " 200milliseconds");
+
+    interval.run();
+
+    await stdDelay(210);
+
+    assertStrictEquals(i, 1);
+
+    await stdDelay(210);
+
+    assertStrictEquals(i, 2);
+
+    interval.abort();
+  });
+
+  it("times option", async () => {
+    let i = 0;
+
+    const interval = new Interval(
+      () => {
         i++;
-      }, "100 ms");
 
-      timeout.run();
+        if (i > 5) {
+          unreachable();
+        }
+      },
+      100,
+      {
+        times: 5,
+      },
+    );
 
+    interval.run();
+
+    for (let i = 0; i <= 7; i++) {
       await stdDelay(110);
-
-      assertStrictEquals(i, 1);
-    });
-
-    it("persistent property", async () => {
-      const timeout = new Timeout(noop, 100, {
-        persistent: false,
-      });
-
-      timeout.ref();
-      assert(!timeout.persistent);
-
-      timeout.run();
-      assert(!timeout.persistent);
-
-      timeout.ref();
-      assert(timeout.persistent);
-
-      timeout.unref();
-      assert(!timeout.persistent);
-
-      await stdDelay(110);
-    });
-    it("running and ran property", async () => {
-      const timeout = new Timeout(noop, 100);
-
-      timeout.run();
-
-      assert(timeout.running);
-      assert(!timeout.ran);
-
-      await stdDelay(110);
-
-      assert(!timeout.running);
-      assert(timeout.ran);
-    });
-
-    describe("abortable", () => {
-      it("abort method", async () => {
-        const timeout = new Timeout(unreachable, 100);
-
-        timeout.run();
-
-        assert(!timeout.isAborted);
-
-        timeout.abort();
-
-        await stdDelay(110);
-
-        assert(timeout.isAborted);
-        assert(!timeout.ran);
-      });
-
-      it("signal", async () => {
-        const abort = new AbortController();
-
-        new Timeout(
-          () => {
-            console;
-          },
-          100,
-          { signal: abort.signal },
-        );
-
-        const timeout = new Timeout(unreachable, 100, {
-          signal: abort.signal,
-        });
-
-        timeout.run();
-
-        assert(!timeout.isAborted);
-
-        abort.abort();
-
-        await stdDelay(110);
-
-        assert(timeout.isAborted);
-      });
-    });
+    }
   });
 
-  describe("Interval", () => {
-    describe("abortable", () => {
-      it("abort method", async () => {
-        let i = 0;
+  it("runs property", async () => {
+    let i = 0;
 
-        const interval = new Interval(() => {
-          i++;
-
-          if (i == 2) {
-            unreachable();
-          }
-        }, 100);
-
-        interval.run();
-
-        assert(!interval.isAborted);
-
-        await stdDelay(110);
-
-        assert(!interval.isAborted);
-
-        interval.abort();
-
-        await stdDelay(110);
-
-        assert(interval.isAborted);
-      });
-
-      describe("signal", () => {
-        it("aborted while running", async () => {
-          const start = new Date();
-          const abort = new AbortController();
-
-          const { signal } = abort;
-
-          let i = 0;
-
-          const timeout = new Interval(
-            () => {
-              i++;
-
-              if (i == 2) {
-                unreachable();
-              }
-            },
-            100,
-            {
-              signal,
-            },
-          );
-
-          timeout.run();
-
-          await stdDelay(110);
-
-          abort.abort();
-
-          await timeout.aborted.then(() => {
-            const diff = new Date().getTime() - start.getTime();
-
-            assert(diff < 200);
-            assertStrictEquals(i, 1);
-          });
-
-          await stdDelay(110);
-
-          assert(timeout.isAborted);
-          assertStrictEquals(i, 1);
-        });
-
-        it("aborted before running", async () => {
-          const start = new Date();
-          const abort = new AbortController();
-
-          const { signal } = abort;
-
-          let i = 0;
-
-          abort.abort();
-
-          const timeout = new Interval(
-            () => {
-              i++;
-
-              if (i == 2) {
-                unreachable();
-              }
-            },
-            100,
-            {
-              signal,
-            },
-          );
-
-          await timeout.aborted.then(() => {
-            const diff = new Date().getTime() - start.getTime();
-
-            assert(diff < 100);
-          });
-
-          await stdDelay(110);
-
-          assertStrictEquals(i, 0);
-        });
-      });
-    });
-
-    it("string time", async () => {
-      let start = new Date();
-      let i = 0;
-
-      const interval = new Interval(() => {
-        const now = new Date(),
-          diff = now.getTime() - start.getTime();
-
-        assert(diff >= 100);
-
-        start = now;
-
+    const interval = new Interval(
+      () => {
         i++;
-      }, " 200milliseconds");
 
-      interval.run();
+        assertEquals(interval.runs, i);
+      },
+      100,
+      {
+        times: 5,
+      },
+    );
 
-      await stdDelay(210);
+    interval.run();
 
-      assertStrictEquals(i, 1);
+    for (let i = 0; i <= 5; i++) {
+      await stdDelay(110);
+    }
+  });
+});
 
-      await stdDelay(210);
+// https://deno.land/std@0.161.0/async/delay_test.ts
+describe("delay", () => {
+  it("delay", async function () {
+    const start = new Date();
+    const delayedPromise = delay(100);
+    const result = await delayedPromise;
+    const diff = new Date().getTime() - start.getTime();
 
-      assertStrictEquals(i, 2);
-
-      interval.abort();
-    });
-
-    it("times option", async () => {
-      let i = 0;
-
-      const interval = new Interval(
-        () => {
-          i++;
-
-          if (i > 5) {
-            unreachable();
-          }
-        },
-        100,
-        {
-          times: 5,
-        },
-      );
-
-      interval.run();
-
-      for (let i = 0; i <= 7; i++) {
-        await stdDelay(110);
-      }
-    });
-
-    it("runs property", async () => {
-      let i = 0;
-
-      const interval = new Interval(
-        () => {
-          i++;
-
-          assertEquals(interval.runs, i);
-        },
-        100,
-        {
-          times: 5,
-        },
-      );
-
-      interval.run();
-
-      for (let i = 0; i <= 5; i++) {
-        await stdDelay(110);
-      }
-    });
+    assert(result === undefined);
+    assert(diff >= 100);
   });
 
-  // https://deno.land/std@0.161.0/async/delay_test.ts
-  describe("delay", () => {
-    it("delay", async function () {
-      const start = new Date();
-      const delayedPromise = delay(100);
-      const result = await delayedPromise;
-      const diff = new Date().getTime() - start.getTime();
+  it("delay with abort", async function () {
+    const start = new Date();
+    const abort = new AbortController();
+    const { signal } = abort;
+    const delayedPromise = delay("100  ms", { signal });
 
-      assert(result === undefined);
-      assert(diff >= 100);
-    });
+    setTimeout(() => abort.abort(), 0);
 
-    it("delay with abort", async function () {
-      const start = new Date();
-      const abort = new AbortController();
-      const { signal } = abort;
-      const delayedPromise = delay("100  ms", { signal });
+    await assertRejects(
+      () => delayedPromise,
+      DOMException,
+      "The timer was aborted.",
+    );
 
-      setTimeout(() => abort.abort(), 0);
+    const diff = new Date().getTime() - start.getTime();
 
-      await assertRejects(
-        () => delayedPromise,
-        DOMException,
-        "The timer was aborted.",
-      );
-
-      const diff = new Date().getTime() - start.getTime();
-
-      assert(diff < 100);
-    });
-
-    it("delay with non-aborted signal", async function () {
-      const start = new Date();
-      const abort = new AbortController();
-      const { signal } = abort;
-
-      const delayedPromise = delay("100 milliseconds", { signal }); // abort.abort()
-      const result = await delayedPromise;
-
-      const diff = new Date().getTime() - start.getTime();
-
-      assert(result === undefined);
-      assert(diff >= 100);
-    });
-
-    it("delay with signal aborted after delay", async function () {
-      const start = new Date();
-      const abort = new AbortController();
-      const { signal } = abort;
-      const delayedPromise = delay(100, { signal });
-
-      const result = await delayedPromise;
-
-      abort.abort();
-
-      const diff = new Date().getTime() - start.getTime();
-
-      assert(result === undefined);
-      assert(diff >= 100);
-    });
-
-    it("delay with already aborted signal", async function () {
-      const start = new Date();
-      const abort = new AbortController();
-
-      abort.abort();
-
-      const { signal } = abort;
-      const delayedPromise = delay(100, { signal });
-
-      await assertRejects(
-        () => delayedPromise,
-        AbortException,
-        "The timer was aborted.",
-      );
-
-      const diff = new Date().getTime() - start.getTime();
-
-      assert(diff < 100);
-    });
-
-    it("`clear()` method", async () => {
-      const start = new Date();
-      const abort = new AbortController();
-
-      abort.abort();
-
-      const { signal } = abort;
-      const delayedPromise = delay(100, { signal });
-
-      delayedPromise.abort();
-
-      await assertRejects(
-        () => delayedPromise,
-        AbortException,
-        "The timer was aborted.",
-      );
-
-      const diff = new Date().getTime() - start.getTime();
-
-      assert(diff < 100);
-    });
+    assert(diff < 100);
   });
 
-  describe("times", () => {
-    it("basic", async () => {
-      let i = 0;
+  it("delay with non-aborted signal", async function () {
+    const start = new Date();
+    const abort = new AbortController();
+    const { signal } = abort;
 
-      times(
-        () => {
-          i++;
+    const delayedPromise = delay("100 milliseconds", { signal }); // abort.abort()
+    const result = await delayedPromise;
 
-          if (i > 5) {
-            unreachable();
-          }
-        },
-        100,
-        5,
-      );
+    const diff = new Date().getTime() - start.getTime();
 
-      for (let i = 0; i <= 7; i++) {
-        await stdDelay(110);
-      }
-    });
+    assert(result === undefined);
+    assert(diff >= 100);
+  });
 
-    it("time string", async () => {
-      let i = 0;
+  it("delay with signal aborted after delay", async function () {
+    const start = new Date();
+    const abort = new AbortController();
+    const { signal } = abort;
+    const delayedPromise = delay(100, { signal });
 
-      times(
-        () => {
-          i++;
+    const result = await delayedPromise;
 
-          if (i > 5) {
-            unreachable();
-          }
-        },
-        "100 ms",
-        5,
-      );
+    abort.abort();
 
-      for (let i = 0; i <= 7; i++) {
-        await stdDelay(110);
-      }
-    });
+    const diff = new Date().getTime() - start.getTime();
+
+    assert(result === undefined);
+    assert(diff >= 100);
+  });
+
+  it("delay with already aborted signal", async function () {
+    const start = new Date();
+    const abort = new AbortController();
+
+    abort.abort();
+
+    const { signal } = abort;
+    const delayedPromise = delay(100, { signal });
+
+    await assertRejects(
+      () => delayedPromise,
+      AbortException,
+      "The timer was aborted.",
+    );
+
+    const diff = new Date().getTime() - start.getTime();
+
+    assert(diff < 100);
+  });
+
+  it("`clear()` method", async () => {
+    const start = new Date();
+    const abort = new AbortController();
+
+    abort.abort();
+
+    const { signal } = abort;
+    const delayedPromise = delay(100, { signal });
+
+    delayedPromise.abort();
+
+    await assertRejects(
+      () => delayedPromise,
+      AbortException,
+      "The timer was aborted.",
+    );
+
+    const diff = new Date().getTime() - start.getTime();
+
+    assert(diff < 100);
+  });
+});
+
+describe("times", () => {
+  it("basic", async () => {
+    let i = 0;
+
+    times(
+      () => {
+        i++;
+
+        if (i > 5) {
+          unreachable();
+        }
+      },
+      100,
+      5,
+    );
+
+    for (let i = 0; i <= 7; i++) {
+      await stdDelay(110);
+    }
+  });
+
+  it("time string", async () => {
+    let i = 0;
+
+    times(
+      () => {
+        i++;
+
+        if (i > 5) {
+          unreachable();
+        }
+      },
+      "100 ms",
+      5,
+    );
+
+    for (let i = 0; i <= 7; i++) {
+      await stdDelay(110);
+    }
   });
 });
