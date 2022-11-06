@@ -188,23 +188,18 @@ available in Deno) and `args`, for `Interval` additionally `times`.
 
 #### Properties
 
-(Note: the word timeout will be used for both timeout and interval)\
 `id`: The Id of the timer, can be used with `clearTimeout` and `clearInterval`
-`aborted`: A Promise, that resolves, when the timeout gets aborted, but only, if
+`aborted`: A Promise, that resolves, when the timer gets aborted, but only, if
 the abort happens with a call of the `abort` method or the abortion via an
 `AbortController`.\
-`isAborted`: A boolean indicating whether the timeout has been aborted.\
+`isAborted`: A boolean indicating whether the timer has been aborted.\
 `persistent` (only available in Deno): A boolean indicating whether the process
 should continues running as long as the timer exists. This is `true` by default\
 _deprecated_: `timer`: The Id of the timer. Use `id` instead\
-_deprecated_: `ran`: A boolean indicating whether the timeout ran already. Only
-available for `Timeout`\
-_deprecated_: `running`: A boolean indicating whether the timeout is currently
-running
-
-##### Timeout only
-
-`ran`: A boolean indicating whether the timeout ran already.
+`ran`: A boolean indicating whether the timer ran already. Gets only set to
+`true` on `Interval` when the `times` option has been passed and the interval
+has run `times` times\
+`running`: A boolean indicating whether the timeout is currently running
 
 ##### Interval only
 

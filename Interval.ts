@@ -22,7 +22,7 @@ export class Interval<T extends any[] = any[]> extends Base<T> {
    * This will only be set to true, if the `times` options has been passed and the interval has run `times` often
    */
   get ran() {
-    return false;
+    return this._ran;
   }
 
   /**
