@@ -15,8 +15,15 @@ export const TIMEOUT_MAX = 2147483647; // 2^31-1
 
 export class AbortException extends DOMException {
   constructor(public cause?: any) {
-    super("Delay was aborted.", "AbortError");
+    super("The timer was aborted.", "AbortException");
   }
+}
+
+export interface AbortablePromise<T> extends Promise<T> {
+  /**
+   * Clear the timeout.
+   */
+  abort: () => void;
 }
 
 export function setTimeout(cb: Listener, delay?: number, ...args: any[]) {
@@ -66,9 +73,19 @@ export function clearInterval(id = 0) {
 export function delay(
   delay: number | string,
   options: Omit<TimeoutOptions, "args"> = {},
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const timeout = new Timeout(resolve, delay, options);
+): AbortablePromise<void> {
+  let timeout: Timeout | undefined;
+
+  const abortablePromise = new Promise((resolve, reject) => {
+    timeout = new Timeout(
+      () => {
+        abortablePromise.abort();
+
+        resolve();
+      },
+      delay,
+      options,
+    );
 
     timeout.aborted.then(reject);
 
@@ -77,7 +94,14 @@ export function delay(
     } catch (e) {
       reject(new AbortException(e));
     }
-  });
+  }) as AbortablePromise<void>;
+
+  abortablePromise.abort = () => {
+    timeout?.abort();
+    timeout = undefined;
+  };
+
+  return abortablePromise;
 }
 
 /**
@@ -213,4 +237,3 @@ export {
 };
 
 export { TimeoutError } from "https://deno.land/x/p_timeout@1.0.2/mod.ts";
-export type { ClearablePromise } from "https://deno.land/x/p_timeout@1.0.2/mod.ts";
