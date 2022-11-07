@@ -2,7 +2,11 @@
 import { Listener, Timeout } from "../mod.ts";
 
 export class After {
-  protected timeout?: Timeout<never[]>;
+  protected _timeout?: Timeout<never[]>;
+
+  get timeout() {
+    return this._timeout;
+  }
 
   protected cb?: Listener<never[]>;
 
@@ -12,22 +16,22 @@ export class After {
    * runs the timeout
    */
   do(cb: Listener<never[]>) {
-    if (this.timeout) {
+    if (this._timeout) {
       console.warn(
         "The interval is already running and gets cancelled now and restarts.",
       );
 
-      this.timeout?.abort();
+      this._timeout?.abort();
     }
 
-    this.timeout = new Timeout(cb.bind(this), this.time);
+    this._timeout = new Timeout(cb.bind(this), this.time);
 
-    this.timeout.run();
+    this._timeout.run();
   }
 
   stop(reason?: any) {
-    this.timeout?.abort(reason);
+    this._timeout?.abort(reason);
 
-    delete this.timeout;
+    delete this._timeout;
   }
 }

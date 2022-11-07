@@ -3,13 +3,13 @@ import {
   assertRejects,
   assertStrictEquals,
   assertThrows,
-} from "https://deno.land/std@0.161.0/testing/asserts.ts";
+} from "https://deno.land/std@0.162.0/testing/asserts.ts";
 import {
   afterEach,
   beforeEach,
   describe,
   it,
-} from "https://deno.land/std@0.161.0/testing/bdd.ts";
+} from "https://deno.land/std@0.162.0/testing/bdd.ts";
 import { AbortablePromise, AbortException, delay } from "../mod.ts";
 import pTimeout, { TimeoutError } from "../src/pTimeout.ts";
 

@@ -59,8 +59,10 @@ export class Interval<T extends any[] = any[]> extends Base<T> {
       this._timer = globalThis.setTimeout(() => {
         this.clear();
 
+        this._runs++;
+
         // if the runs are finished, abort
-        if (this._runs! + 1 === this.options.times!) {
+        if (this._runs! === this.options.times!) {
           this.options.signal?.removeEventListener("abort", this.abort);
 
           this._running = false;
@@ -68,8 +70,6 @@ export class Interval<T extends any[] = any[]> extends Base<T> {
         } // else continue running
         else {
           this.#run();
-
-          this._runs++;
         }
 
         // then call the callback

@@ -8,15 +8,15 @@ import {
   setTimeout,
   times,
 } from "../mod.ts";
-import { describe, it } from "https://deno.land/std@0.161.0/testing/bdd.ts";
+import { describe, it } from "https://deno.land/std@0.162.0/testing/bdd.ts";
 import {
   assert,
   assertEquals,
   assertRejects,
   assertStrictEquals,
   unreachable,
-} from "https://deno.land/std@0.161.0/testing/asserts.ts";
-import { delay as stdDelay } from "https://deno.land/std@0.161.0/async/delay.ts";
+} from "https://deno.land/std@0.162.0/testing/asserts.ts";
+import { delay as stdDelay } from "https://deno.land/std@0.162.0/async/delay.ts";
 
 describe("basic functionality", () => {
   describe("setTimeout", () => {
@@ -114,83 +114,7 @@ describe("basic functionality", () => {
   });
 });
 
-describe("advanced functionality", () => {
-  it("string time", async () => {
-    let start = new Date();
-    let i = 0;
-
-    const interval = new Interval(() => {
-      const now = new Date(),
-        diff = now.getTime() - start.getTime();
-
-      assert(diff >= 100);
-
-      start = now;
-
-      i++;
-    }, " 200milliseconds");
-
-    interval.run();
-
-    await stdDelay(210);
-
-    assertStrictEquals(i, 1);
-
-    await stdDelay(210);
-
-    assertStrictEquals(i, 2);
-
-    interval.abort();
-  });
-
-  it("times option", async () => {
-    let i = 0;
-
-    const interval = new Interval(
-      () => {
-        i++;
-
-        if (i > 5) {
-          unreachable();
-        }
-      },
-      100,
-      {
-        times: 5,
-      },
-    );
-
-    interval.run();
-
-    for (let i = 0; i <= 7; i++) {
-      await stdDelay(110);
-    }
-  });
-
-  it("runs property", async () => {
-    let i = 0;
-
-    const interval = new Interval(
-      () => {
-        i++;
-
-        assertEquals(interval.runs, i);
-      },
-      100,
-      {
-        times: 5,
-      },
-    );
-
-    interval.run();
-
-    for (let i = 0; i <= 5; i++) {
-      await stdDelay(110);
-    }
-  });
-});
-
-// https://deno.land/std@0.161.0/async/delay_test.ts
+// https://deno.land/std@0.162.0/async/delay_test.ts
 describe("delay", () => {
   it("delay", async function () {
     const start = new Date();

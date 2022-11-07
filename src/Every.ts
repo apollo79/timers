@@ -1,8 +1,12 @@
 // deno-lint-ignore-file no-explicit-any
-import { Interval, Listener } from "../mod.ts";
+import { Interval, interval, Listener } from "../mod.ts";
 
 export class Every {
-  protected interval?: Interval<never[]>;
+  protected _interval?: Interval<never[]>;
+
+  get interval() {
+    return this._interval;
+  }
 
   #times = Infinity;
 
@@ -34,11 +38,11 @@ export class Every {
       this.interval?.abort();
     }
 
-    this.interval = new Interval(cb.bind(this), this.time, {
+    this._interval = new Interval(cb.bind(this), this.time, {
       times: this.#times,
     });
 
-    this.interval.run();
+    this._interval.run();
 
     return this;
   }
@@ -46,6 +50,6 @@ export class Every {
   stop(reason?: any) {
     this.interval?.abort(reason);
 
-    delete this.interval;
+    delete this._interval;
   }
 }

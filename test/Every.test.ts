@@ -6,17 +6,26 @@ import { Every } from "../src/Every.ts";
 import {
   assertSpyCall,
   assertSpyCalls,
+  Spy,
   spy,
 } from "https://deno.land/std@0.162.0/testing/mock.ts";
-import { describe, it } from "https://deno.land/std@0.162.0/testing/bdd.ts";
+import {
+  beforeAll,
+  beforeEach,
+  describe,
+  it,
+} from "https://deno.land/std@0.162.0/testing/bdd.ts";
+import { assert } from "https://deno.land/std@0.162.0/testing/asserts.ts";
 
-describe("Timers", function () {
+describe("every", function () {
+  let fn: Spy;
+
+  beforeEach(() => {
+    fn = spy();
+  });
+
   it("every", () =>
     new Promise((done) => {
-      const fn = spy(() => {
-        console.log("called", new Date().getMilliseconds());
-      });
-
       const e = new Every("50ms").do(fn);
 
       setTimeout(() => {
@@ -34,12 +43,27 @@ describe("Timers", function () {
       }, 180);
     }));
 
-  it("every stop", () =>
+  it("times", () =>
     new Promise((done) => {
-      const fn = spy(() => {
-        console.log("called", new Date().getMilliseconds());
-      });
+      const e = new Every("50ms").times(3).do(fn);
 
+      setTimeout(() => {
+        assertSpyCall(fn, 0, { self: e });
+      }, 65);
+
+      setTimeout(() => {
+        assertSpyCalls(fn, 2);
+      }, 130);
+
+      setTimeout(() => {
+        assertSpyCalls(fn, 3);
+        assert(e.interval!.ran);
+        done();
+      }, 180);
+    }));
+
+  it("stop", () =>
+    new Promise((done) => {
       const e = new Every("50ms").do(fn);
 
       setTimeout(() => {
