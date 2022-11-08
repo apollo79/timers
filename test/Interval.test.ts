@@ -4,21 +4,30 @@ import {
   unreachable,
 } from "https://deno.land/std@0.162.0/testing/asserts.ts";
 import {
+  afterEach,
   beforeEach,
   describe,
   it,
 } from "https://deno.land/std@0.162.0/testing/bdd.ts";
-import { Interval } from "../mod.ts";
-import { delay as stdDelay } from "https://deno.land/std@0.162.0/async/delay.ts";
+import { Interval, TIMEOUT_MAX } from "../mod.ts";
 import {
   assertSpyCalls,
   Spy,
   spy,
 } from "https://deno.land/std@0.162.0/testing/mock.ts";
+import { FakeTime } from "https://deno.land/std@0.162.0/testing/time.ts";
 
 const noop = () => {};
 
 describe("Interval", () => {
+  let time: FakeTime;
+  beforeEach(() => {
+    time = new FakeTime();
+  });
+  afterEach(() => {
+    time.restore();
+  });
+
   describe("abortable", () => {
     let fn: Spy;
     beforeEach(() => {
@@ -29,20 +38,20 @@ describe("Interval", () => {
       });
     });
 
-    it("abort method", async () => {
+    it("abort method", () => {
       const interval = new Interval(fn, 100);
 
       interval.run();
 
       assert(!interval.isAborted);
 
-      await stdDelay(110);
+      time.tick(110);
 
       assert(!interval.isAborted);
 
       interval.abort();
 
-      await stdDelay(110);
+      time.tick(110);
 
       assert(interval.isAborted);
     });
@@ -60,7 +69,7 @@ describe("Interval", () => {
 
         interval.run();
 
-        await stdDelay(110);
+        time.tick(110);
 
         abort.abort();
 
@@ -71,7 +80,7 @@ describe("Interval", () => {
           assertSpyCalls(fn, 1);
         });
 
-        await stdDelay(110);
+        time.tick(110);
 
         assert(interval.isAborted);
         assertSpyCalls(fn, 1);
@@ -99,14 +108,14 @@ describe("Interval", () => {
 
         interval.run();
 
-        await stdDelay(110);
+        time.tick(110);
 
         assertSpyCalls(fn, 0);
       });
     });
   });
 
-  it("string time", async () => {
+  it("string time", () => {
     let start = new Date();
 
     const fn = spy(() => {
@@ -122,11 +131,11 @@ describe("Interval", () => {
 
     interval.run();
 
-    await stdDelay(210);
+    time.tick(210);
 
     assertSpyCalls(fn, 1);
 
-    await stdDelay(210);
+    time.tick(210);
 
     assertSpyCalls(fn, 2);
 
@@ -152,7 +161,7 @@ describe("Interval", () => {
     interval.abort();
   });
 
-  it("running and ran property", async () => {
+  it("running and ran property", () => {
     const interval = new Interval(noop, 100, {
       times: 2,
     });
@@ -162,13 +171,13 @@ describe("Interval", () => {
     assert(interval.running);
     assert(!interval.ran);
 
-    await stdDelay(220);
+    time.tick(210);
 
     assert(!interval.running);
     assert(interval.ran);
   });
 
-  it("times option", async () => {
+  it("times option", () => {
     const fn = spy(() => {
       if (fn.calls.length > 5) {
         unreachable();
@@ -182,11 +191,11 @@ describe("Interval", () => {
     interval.run();
 
     for (let i = 0; i <= 7; i++) {
-      await stdDelay(110);
+      time.tick(110);
     }
   });
 
-  it("runs property", async () => {
+  it("runs property", () => {
     const fn: Spy = spy<Interval<never>, never, void>(function () {
       assertStrictEquals(this.runs, fn.calls.length + 1);
     });
@@ -198,7 +207,25 @@ describe("Interval", () => {
     interval.run();
 
     for (let i = 0; i <= 5; i++) {
-      await stdDelay(110);
+      time.tick(110);
     }
+  });
+
+  it("long interval", () => {
+    const fn = spy();
+
+    const interval = new Interval(fn, TIMEOUT_MAX + 100);
+    interval.run();
+
+    time.tick(TIMEOUT_MAX);
+    assertSpyCalls(fn, 0);
+
+    time.tick(120);
+    assertSpyCalls(fn, 1);
+
+    time.tick(TIMEOUT_MAX + 120);
+    assertSpyCalls(fn, 2);
+
+    interval.abort();
   });
 });

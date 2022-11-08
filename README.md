@@ -20,7 +20,7 @@ import {
   setInterval,
   setTimeout,
   times,
-} from "httsp://deno.land/x/timers@0.1.0/mod.ts";
+} from "https://deno.land/x/timers@v0.1.0/mod.ts";
 ```
 
 ## Features
@@ -49,7 +49,7 @@ import {
   clearTimeout,
   setInterval,
   setTimeout,
-} from "https://deno.land/x/timers@0.1.0/mod.ts";
+} from "https://deno.land/x/timers@v0.1.0/mod.ts";
 
 const timeout = setTimeout(() => {
   console.log("in 30 days");
@@ -78,7 +78,7 @@ import {
   clearLongTimeout,
   setLongInterval,
   setLongTimeout,
-} from "https://deno.land/x/timers@0.1.0/mod.ts";
+} from "https://deno.land/x/timers@v0.1.0/mod.ts";
 ```
 
 ### `delay`
@@ -93,7 +93,7 @@ reject\
 continue to run as long as the timer exists. This is `true` by default.
 
 ```ts
-import { delay } from "https://deno.land/x/timers@0.1.0/mod.ts";
+import { delay } from "https://deno.land/x/timers@v0.1.0/mod.ts";
 const MSG = "Please type your name";
 const info = document.querySelector("p.info");
 const nameInput = document.querySelector("input.name");
@@ -119,7 +119,7 @@ parameter, like with `setInterval`, you must pass them as `array`, in order to
 have the other options.
 
 ```ts
-import { times } from "https://deno.land/x/timers@0.1.0/mod.ts";
+import { times } from "https://deno.land/x/timers@v0.1.0/mod.ts";
 
 const paragraph = document.querySelector("p.numbers");
 const abortBtn = document.querySelector("button.abort");
@@ -149,7 +149,7 @@ Adapted from [p-timeout](https://github.com/khrj/p-timeout)\
 Timeout a promise after a specified amount of time.
 
 ```ts
-import { pTimeout, setTimeout } from "https://deno.land/x/timers@0.1.0/mod.ts";
+import { pTimeout, setTimeout } from "https://deno.land/x/timers@v0.1.0/mod.ts";
 
 const delayedPromise = new Promise((resolve) => setTimeout(resolve, 500));
 
@@ -172,7 +172,7 @@ They are exported as well and you can use them to create timeouts without
 running them directly.
 
 ```ts
-import { Timeout } from "https://deno.land/x/timers@0.1.0/mod.ts";
+import { Timeout } from "https://deno.land/x/timers@v0.1.0/mod.ts";
 
 const notifyBtn = document.querySelector("button.notify");
 const timeout = new Timeout(() => {
@@ -228,7 +228,7 @@ deno test
 or, without cloning
 
 ```bash
-deno test https://deno.land/x/timers@0.1.0/test.ts
+deno test https://deno.land/x/timers@v0.1.0/test.ts
 ```
 
 ## Contributing

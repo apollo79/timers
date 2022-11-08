@@ -10,45 +10,48 @@ import {
   spy,
 } from "https://deno.land/std@0.162.0/testing/mock.ts";
 import {
+  afterEach,
   beforeEach,
   describe,
   it,
 } from "https://deno.land/std@0.162.0/testing/bdd.ts";
 import { assert } from "https://deno.land/std@0.162.0/testing/asserts.ts";
+import { FakeTime } from "https://deno.land/std@0.162.0/testing/time.ts";
 
-describe("Timers", function () {
+describe("after", function () {
   let fn: Spy;
 
   beforeEach(() => {
     fn = spy();
   });
-  it("every", () =>
-    new Promise((done) => {
-      const a = new After("50ms").do(fn);
 
-      setTimeout(() => {
-        assertSpyCall(fn, 0, { self: a });
-        assert(a.timeout!.ran);
-        done();
-      }, 65);
-    }));
+  let time: FakeTime;
+  beforeEach(() => {
+    time = new FakeTime();
+  });
+  afterEach(() => {
+    time.restore();
+  });
 
-  it("every stop", () =>
-    new Promise((done) => {
-      const fn = spy(() => {
-        console.log("called", new Date().getMilliseconds());
-      });
+  it("after", () => {
+    const a = new After("50ms").do(fn);
 
-      const e = new After("50ms").do(fn);
+    time.tick(60);
 
-      setTimeout(() => {
-        assertSpyCalls(fn, 0);
-        e.stop();
-      }, 30);
+    assertSpyCall(fn, 0, { self: a });
+    assert(a.timeout!.ran);
+  });
 
-      setTimeout(() => {
-        assertSpyCalls(fn, 0);
-        done();
-      }, 65);
-    }));
+  it("after stop", () => {
+    const e = new After("50ms").do(fn);
+
+    time.tick(30);
+
+    assertSpyCalls(fn, 0);
+    e.stop();
+
+    time.tick(60);
+
+    assertSpyCalls(fn, 0);
+  });
 });

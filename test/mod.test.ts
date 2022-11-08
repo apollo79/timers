@@ -8,6 +8,7 @@ import {
   times,
 } from "../mod.ts";
 import {
+  afterEach,
   beforeEach,
   describe,
   it,
@@ -18,16 +19,24 @@ import {
   assertRejects,
   unreachable,
 } from "https://deno.land/std@0.162.0/testing/asserts.ts";
-import { delay as stdDelay } from "https://deno.land/std@0.162.0/async/delay.ts";
 import {
   assertSpyCalls,
   Spy,
   spy,
 } from "https://deno.land/std@0.162.0/testing/mock.ts";
+import { FakeTime } from "https://deno.land/std@0.162.0/testing/time.ts";
 
 describe("basic functionality", () => {
+  let time: FakeTime;
+  beforeEach(() => {
+    time = new FakeTime();
+  });
+  afterEach(() => {
+    time.restore();
+  });
+
   describe("setTimeout", () => {
-    it("basic", async () => {
+    it("basic", () => {
       const start = new Date();
       const fn = spy(() => {
         const diff = new Date().getTime() - start.getTime();
@@ -39,38 +48,36 @@ describe("basic functionality", () => {
 
       assertSpyCalls(fn, 0);
 
-      await stdDelay(110);
+      time.tick(110);
 
       assertSpyCalls(fn, 1);
     });
 
-    it("Arguments", async () => {
+    it("Arguments", () => {
       const args: [number, string] = [1, "hello"];
+      const fn = spy((...passedArgs) => {
+        assertEquals(passedArgs, args);
+      });
 
-      setTimeout(
-        (...passedArgs) => {
-          assertEquals(passedArgs, args);
-        },
-        100,
-        ...args,
-      );
+      setTimeout(fn, 100, ...args);
 
-      await stdDelay(110);
+      time.tick(110);
+      assertSpyCalls(fn, 1);
     });
   });
 
   describe("clearTimeout", () => {
-    it("basic", async () => {
+    it("basic", () => {
       const timeoutId = setTimeout(unreachable, 100);
 
       clearTimeout(timeoutId);
 
-      await stdDelay(110);
+      time.tick(110);
     });
   });
 
   describe("setInterval and clearInterval", () => {
-    it("basic", async () => {
+    it("basic", () => {
       let start = new Date();
       const fn = spy(() => {
         const now = new Date(),
@@ -85,22 +92,22 @@ describe("basic functionality", () => {
 
       assertSpyCalls(fn, 0);
 
-      await stdDelay(110);
+      time.tick(110);
 
       assertSpyCalls(fn, 1);
 
-      await stdDelay(110);
+      time.tick(110);
 
       assertSpyCalls(fn, 2);
 
       clearInterval(intervalId);
 
-      await stdDelay(110);
+      time.tick(110);
 
       assertSpyCalls(fn, 2);
     });
 
-    it("Arguments", async () => {
+    it("Arguments", () => {
       const args: [number, string] = [1, "hello"];
 
       const timeoutId = setInterval(
@@ -111,7 +118,7 @@ describe("basic functionality", () => {
         ...args,
       );
 
-      await stdDelay(110);
+      time.tick(110);
 
       clearInterval(timeoutId);
     });
@@ -120,7 +127,7 @@ describe("basic functionality", () => {
 
 // https://deno.land/std@0.162.0/async/delay_test.ts
 describe("delay", () => {
-  it("delay", async function () {
+  it("delay", async () => {
     const start = new Date();
     const delayedPromise = delay(100);
     const result = await delayedPromise;
@@ -130,7 +137,7 @@ describe("delay", () => {
     assert(diff >= 100);
   });
 
-  it("delay with abort", async function () {
+  it("delay with abort", async () => {
     const start = new Date();
     const abort = new AbortController();
     const { signal } = abort;
@@ -149,7 +156,7 @@ describe("delay", () => {
     assert(diff < 100);
   });
 
-  it("delay with non-aborted signal", async function () {
+  it("delay with non-aborted signal", async () => {
     const start = new Date();
     const abort = new AbortController();
     const { signal } = abort;
@@ -163,7 +170,7 @@ describe("delay", () => {
     assert(diff >= 100);
   });
 
-  it("delay with signal aborted after delay", async function () {
+  it("delay with signal aborted after delay", async () => {
     const start = new Date();
     const abort = new AbortController();
     const { signal } = abort;
@@ -179,7 +186,7 @@ describe("delay", () => {
     assert(diff >= 100);
   });
 
-  it("delay with already aborted signal", async function () {
+  it("delay with already aborted signal", async () => {
     const start = new Date();
     const abort = new AbortController();
 
@@ -224,6 +231,13 @@ describe("delay", () => {
 
 describe("times", () => {
   let fn: Spy;
+  let time: FakeTime;
+  beforeEach(() => {
+    time = new FakeTime();
+  });
+  afterEach(() => {
+    time.restore();
+  });
 
   beforeEach(() => {
     fn = spy(() => {
@@ -232,19 +246,20 @@ describe("times", () => {
       }
     });
   });
-  it("times", async () => {
+
+  it("times", () => {
     times(fn, 100, 5);
 
     for (let i = 0; i <= 7; i++) {
-      await stdDelay(110);
+      time.tick(110);
     }
   });
 
-  it("time string", async () => {
+  it("time string", () => {
     times(fn, "100 ms", 5);
 
     for (let i = 0; i <= 7; i++) {
-      await stdDelay(110);
+      time.tick(110);
     }
   });
 });

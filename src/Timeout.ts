@@ -57,6 +57,7 @@ export class Timeout<T extends any[] = any[]> extends Timer<T> {
     // if the remaining time to wait is in the range that is possible to handle for the native methods
     if (this._timeLeft <= TIMEOUT_MAX) {
       this._timer = globalThis.setTimeout(() => {
+        // call the callback with the given args
         this.cb(...this.options.args!);
 
         this.options.signal?.removeEventListener("abort", this.abort);

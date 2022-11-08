@@ -108,7 +108,7 @@ export function delay(
  *
  * @example
  * ```ts
- * import { times } from "https://deno.land/x/timers@0.1.0/mod.ts";
+ * import { times } from "https://deno.land/x/timers@v0.1.0/mod.ts";
  *
  * const paragraph = document.querySelector("p.numbers");
  * const abortBtn = document.querySelector("button.abort");

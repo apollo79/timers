@@ -28,7 +28,7 @@ export interface PTimeoutOptions<T> {
  * @returns A decorated `options.promise` that times out after `options.milliseconds` time. It has a `.clear()` method that clears the timeout.
  * @example
  * ```
- * import pTimeout from './mod.ts'
+ * import pTimeout from 'https://deno.land/x/timers@v0.1.0/mod.ts'
  * const delayedPromise = new Promise(resolve => setTimeout(resolve, 500))
  * await pTimeout({
  *     promise: delayedPromise,
