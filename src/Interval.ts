@@ -57,8 +57,6 @@ export class Interval<T extends any[] = any[]> extends Timer<T> {
   #run() {
     if (this._timeLeft <= TIMEOUT_MAX) {
       this._timer = globalThis.setTimeout(() => {
-        this.clear();
-
         this._runs++;
 
         // if the runs are finished, abort
@@ -66,6 +64,7 @@ export class Interval<T extends any[] = any[]> extends Timer<T> {
           this.options.signal?.removeEventListener("abort", this.abort);
 
           this._running = false;
+          // set ran to true as all runs have completed
           this._ran = true;
         } // else continue running
         else {
@@ -78,8 +77,6 @@ export class Interval<T extends any[] = any[]> extends Timer<T> {
     } else {
       this._timer = globalThis.setTimeout(() => {
         this._timeLeft -= TIMEOUT_MAX;
-
-        this.clear();
 
         this.#run();
       }, TIMEOUT_MAX);

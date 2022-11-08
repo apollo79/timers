@@ -54,6 +54,7 @@ export class Timeout<T extends any[] = any[]> extends Timer<T> {
    * private run method to deal with `_running` property, as the method may call itself
    */
   #run() {
+    // if the remaining time to wait is in the range that is possible to handle for the native methods
     if (this._timeLeft <= TIMEOUT_MAX) {
       this._timer = globalThis.setTimeout(() => {
         this.cb(...this.options.args!);
@@ -62,17 +63,13 @@ export class Timeout<T extends any[] = any[]> extends Timer<T> {
 
         this._running = false;
         this._ran = true;
-
-        this.clear();
       }, this._timeLeft);
     } else {
       this._timer = globalThis.setTimeout(() => {
+        // update the time left
         this._timeLeft -= TIMEOUT_MAX;
 
-        globalThis.clearTimeout(this._timer);
-
-        this._timer = undefined;
-
+        // run again with remaining time
         this.#run();
       }, TIMEOUT_MAX);
     }

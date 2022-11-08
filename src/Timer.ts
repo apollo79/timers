@@ -83,14 +83,18 @@ export abstract class Timer<T extends any[] = any[]> {
     delay: number | string,
     options: TimerOptions<T>,
   ) {
+    // convert string to number of milliseconds
     this.delay = typeof delay === "number" ? delay : strToMs(delay);
 
+    // timeLeft is the `delay` at beginning
     this._timeLeft = this.delay;
 
     const { signal, args, persistent } = options;
 
+    // unique ID
     this.id = nextId++;
 
+    // add this timer to the `timers` Map
     timers.set(this.id, this as unknown as Timer);
 
     this._persistent = persistent ?? true;
@@ -109,6 +113,7 @@ export abstract class Timer<T extends any[] = any[]> {
       };
     });
 
+    // if the AbortController's `abort` method was called before instantiating this timer
     if (signal?.aborted) {
       const exception = new AbortException(signal.reason);
 
