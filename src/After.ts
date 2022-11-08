@@ -27,6 +27,8 @@ export class After {
     this._timeout = new Timeout(cb.bind(this), this.time);
 
     this._timeout.run();
+
+    return this;
   }
 
   stop(reason?: any) {
