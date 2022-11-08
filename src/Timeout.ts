@@ -1,10 +1,10 @@
 // deno-lint-ignore-file no-explicit-any
-import { Base, BaseOptions } from "./Base.ts";
+import { Timer, TimerOptions } from "./Timer.ts";
 import { Listener, TIMEOUT_MAX } from "../mod.ts";
 
 // deno-lint-ignore no-empty-interface
 export interface TimeoutOptions<T extends any[] = any[]>
-  extends BaseOptions<T> {}
+  extends TimerOptions<T> {}
 
 /**
  * @class The class representing a timeout
@@ -25,7 +25,7 @@ export interface TimeoutOptions<T extends any[] = any[]>
  * yourService.addEventListener("error", () => abort.abort(), { once: true })
  * ```
  */
-export class Timeout<T extends any[] = any[]> extends Base<T> {
+export class Timeout<T extends any[] = any[]> extends Timer<T> {
   declare readonly options: TimeoutOptions<T>;
 
   protected _ran = false;

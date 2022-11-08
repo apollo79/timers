@@ -1,16 +1,16 @@
 // deno-lint-ignore-file no-explicit-any
-import { Base, BaseOptions } from "./Base.ts";
+import { Timer, TimerOptions } from "./Timer.ts";
 import { Listener, TIMEOUT_MAX } from "../mod.ts";
 
 export interface IntervalOptions<T extends any[] = any[]>
-  extends BaseOptions<T> {
+  extends TimerOptions<T> {
   times?: number;
 }
 
 /**
  * @class A class representing an Interval
  */
-export class Interval<T extends any[] = any[]> extends Base<T> {
+export class Interval<T extends any[] = any[]> extends Timer<T> {
   declare readonly options: IntervalOptions<T>;
   protected _runs: number;
 

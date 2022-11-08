@@ -1,7 +1,5 @@
 import {
   AbortException,
-  After,
-  after,
   clearInterval,
   clearTimeout,
   delay,
@@ -17,7 +15,6 @@ import {
 import {
   assert,
   assertEquals,
-  assertInstanceOf,
   assertRejects,
   unreachable,
 } from "https://deno.land/std@0.162.0/testing/asserts.ts";

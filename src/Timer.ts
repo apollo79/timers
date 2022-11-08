@@ -2,19 +2,19 @@
 import { AbortException, Listener } from "../mod.ts";
 import { strToMs } from "./util.ts";
 
-export interface BaseOptions<T extends any[] = any[]> {
+export interface TimerOptions<T extends any[] = any[]> {
   args?: T;
   signal?: AbortSignal;
   /** Indicates whether the process should continue to run as long as the timer exists. This is `true` by default. */
   persistent?: boolean;
 }
 
-export const timers = new Map<number, Base>();
+export const timers = new Map<number, Timer>();
 
 let nextId = 1;
 
 // shared functionality
-export abstract class Base<T extends any[] = any[]> {
+export abstract class Timer<T extends any[] = any[]> {
   public readonly id: number;
 
   /** Indicates whether the process should continue to run as long as the timer exists. This is `true` by default. */
@@ -35,7 +35,7 @@ export abstract class Base<T extends any[] = any[]> {
    */
   protected _running = false;
 
-  readonly options: BaseOptions<T>;
+  readonly options: TimerOptions<T>;
   /** A Promise, that resolves when the timer gets aborted */
   readonly aborted: Promise<AbortException>;
 
@@ -81,7 +81,7 @@ export abstract class Base<T extends any[] = any[]> {
   constructor(
     public readonly cb: Listener<T>,
     delay: number | string,
-    options: BaseOptions<T>,
+    options: TimerOptions<T>,
   ) {
     this.delay = typeof delay === "number" ? delay : strToMs(delay);
 
@@ -91,7 +91,7 @@ export abstract class Base<T extends any[] = any[]> {
 
     this.id = nextId++;
 
-    timers.set(this.id, this as unknown as Base);
+    timers.set(this.id, this as unknown as Timer);
 
     this._persistent = persistent ?? true;
 
@@ -165,7 +165,7 @@ export abstract class Base<T extends any[] = any[]> {
   abstract run(): number;
 
   /**
-   * clear without resolve {@linkcode Base.aborted}
+   * clear without resolve {@linkcode Timer.aborted}
    */
   protected clear() {
     // clearTimeout and clearInterval are interchangeable, this is ugly, but works

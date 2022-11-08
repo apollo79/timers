@@ -3,7 +3,7 @@
  * This module is browser compatible
  */
 import { After } from "./src/After.ts";
-import { timers } from "./src/Base.ts";
+import { timers } from "./src/Timer.ts";
 import { Every } from "./src/Every.ts";
 import { Interval, IntervalOptions } from "./src/Interval.ts";
 import { Timeout, TimeoutOptions } from "./src/Timeout.ts";
