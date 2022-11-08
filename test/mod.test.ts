@@ -1,41 +1,50 @@
 import {
   AbortException,
+  After,
+  after,
   clearInterval,
   clearTimeout,
   delay,
-  Interval,
   setInterval,
   setTimeout,
   times,
 } from "../mod.ts";
-import { describe, it } from "https://deno.land/std@0.162.0/testing/bdd.ts";
+import {
+  beforeEach,
+  describe,
+  it,
+} from "https://deno.land/std@0.162.0/testing/bdd.ts";
 import {
   assert,
   assertEquals,
+  assertInstanceOf,
   assertRejects,
-  assertStrictEquals,
   unreachable,
 } from "https://deno.land/std@0.162.0/testing/asserts.ts";
 import { delay as stdDelay } from "https://deno.land/std@0.162.0/async/delay.ts";
+import {
+  assertSpyCalls,
+  Spy,
+  spy,
+} from "https://deno.land/std@0.162.0/testing/mock.ts";
 
 describe("basic functionality", () => {
   describe("setTimeout", () => {
     it("basic", async () => {
       const start = new Date();
-      let i = 0;
-
-      setTimeout(() => {
+      const fn = spy(() => {
         const diff = new Date().getTime() - start.getTime();
 
         assert(diff >= 100);
-        i++;
-      }, 100);
+      });
 
-      assertStrictEquals(i, 0);
+      setTimeout(fn, 100);
+
+      assertSpyCalls(fn, 0);
 
       await stdDelay(110);
 
-      assertStrictEquals(i, 1);
+      assertSpyCalls(fn, 1);
     });
 
     it("Arguments", async () => {
@@ -66,34 +75,32 @@ describe("basic functionality", () => {
   describe("setInterval and clearInterval", () => {
     it("basic", async () => {
       let start = new Date();
-      let i = 0;
-
-      const intervalId = setInterval(() => {
-        i++;
-
+      const fn = spy(() => {
         const now = new Date(),
           diff = now.getTime() - start.getTime();
 
         assert(diff >= 100);
 
         start = now;
-      }, 100);
+      });
 
-      assertStrictEquals(i, 0);
+      const intervalId = setInterval(fn, 100);
 
-      await stdDelay(110);
-
-      assertStrictEquals(i, 1);
+      assertSpyCalls(fn, 0);
 
       await stdDelay(110);
 
-      assertStrictEquals(i, 2);
+      assertSpyCalls(fn, 1);
+
+      await stdDelay(110);
+
+      assertSpyCalls(fn, 2);
 
       clearInterval(intervalId);
 
       await stdDelay(110);
 
-      assertStrictEquals(i, 2);
+      assertSpyCalls(fn, 2);
     });
 
     it("Arguments", async () => {
@@ -219,20 +226,17 @@ describe("delay", () => {
 });
 
 describe("times", () => {
-  it("basic", async () => {
-    let i = 0;
+  let fn: Spy;
 
-    times(
-      () => {
-        i++;
-
-        if (i > 5) {
-          unreachable();
-        }
-      },
-      100,
-      5,
-    );
+  beforeEach(() => {
+    fn = spy(() => {
+      if (fn.calls.length > 5) {
+        unreachable();
+      }
+    });
+  });
+  it("times", async () => {
+    times(fn, 100, 5);
 
     for (let i = 0; i <= 7; i++) {
       await stdDelay(110);
@@ -240,19 +244,7 @@ describe("times", () => {
   });
 
   it("time string", async () => {
-    let i = 0;
-
-    times(
-      () => {
-        i++;
-
-        if (i > 5) {
-          unreachable();
-        }
-      },
-      "100 ms",
-      5,
-    );
+    times(fn, "100 ms", 5);
 
     for (let i = 0; i <= 7; i++) {
       await stdDelay(110);

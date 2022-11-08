@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-import { Interval, interval, Listener } from "../mod.ts";
+import { Interval, Listener } from "../mod.ts";
 
 export class Every {
   protected _interval?: Interval<never[]>;
