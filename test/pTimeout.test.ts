@@ -2,6 +2,7 @@ import {
   assert,
   assertRejects,
   assertStrictEquals,
+  unreachable,
 } from "https://deno.land/std@0.162.0/testing/asserts.ts";
 import {
   afterEach,
@@ -129,5 +130,52 @@ describe("pTimeout", () => {
       }), AbortException);
 
     delayed.abort();
+  });
+
+  describe("function promise", () => {
+    it("function promise", async () => {
+      assertStrictEquals(
+        await pTimeout(() => delay(50).then(() => fixture), 200),
+        fixture,
+      );
+    });
+
+    it("doesn't get executed if the signal is aborted", async () => {
+      const abort = new AbortController();
+      const { signal } = abort;
+      // deno-lint-ignore require-await
+      const fn = async () => unreachable();
+
+      abort.abort();
+
+      await assertRejects(
+        () => pTimeout(fn, 200, { signal }),
+        AbortException,
+      );
+    });
+
+    describe("signal argument", () => {
+      it("aborts on aborting internal signal", async () => {
+        const fn = (signal: AbortSignal) =>
+          delay(100, { signal }).then(unreachable);
+
+        await assertRejects(() => pTimeout(fn, 50), TimeoutError);
+      });
+
+      it("aborts on aborting passed signal", async () => {
+        const abort = new AbortController();
+        const { signal } = abort;
+
+        const fn = (signal: AbortSignal) =>
+          delay(100, { signal }).then(unreachable);
+
+        delay(50).then(() => abort.abort());
+
+        await assertRejects(
+          () => pTimeout(fn, 200, { signal }),
+          AbortException,
+        );
+      });
+    });
   });
 });

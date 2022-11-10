@@ -38,7 +38,7 @@ export interface PTimeoutOptions<T> {
  * ```
  */
 export function pTimeout<T>(
-  promise: Promise<T>,
+  promise: Promise<T> | ((signal: AbortSignal) => Promise<T>),
   delay: number | string,
   options: PTimeoutOptions<T> = {},
 ) {
@@ -46,51 +46,73 @@ export function pTimeout<T>(
 
   let timeout: Timeout | undefined;
 
+  const abort = new AbortController();
+
   const abortablePromise = new Promise((resolve, reject) => {
-    if (delay === Infinity) {
-      resolve(promise);
+    abort.signal.addEventListener("abort", () => {
+      reject(abort.signal.reason);
+    }, { once: true });
+
+    if (delay === Infinity && !signal?.aborted) {
+      resolve(typeof promise == "function" ? promise(abort.signal) : promise);
       return;
     }
 
     if (signal) {
       if (signal.aborted) {
-        reject(new AbortException(signal.reason));
+        abort.abort(new AbortException(signal.reason));
       }
 
-      signal.addEventListener("abort", () => {
-        reject(new AbortException(signal.reason));
-      });
+      signal.addEventListener(
+        "abort",
+        () => abort.abort(new AbortException(signal.reason)),
+        { once: true },
+      );
     }
 
-    timeout = new Timeout(() => {
-      if (fallbackFn) {
-        try {
-          resolve(fallbackFn());
-        } catch (error) {
-          reject(error);
-        } finally {
-          timeout!.abort();
+    if (typeof promise == "function") {
+      if (!signal?.aborted) {
+        promise = promise(abort.signal);
+      }
+    }
+
+    timeout = new Timeout(
+      () => {
+        if (fallbackFn) {
+          try {
+            resolve(fallbackFn());
+          } catch (error) {
+            abort.abort(error);
+          } finally {
+            timeout!.abort();
+          }
+
+          return;
         }
 
-        return;
-      }
+        const message = failMessage ??
+          `Promise timed out after ${delay} milliseconds`;
+        const timeoutError = failError ?? new TimeoutError(message);
 
-      const message = failMessage ??
-        `Promise timed out after ${delay} milliseconds`;
-      const timeoutError = failError ?? new TimeoutError(message);
+        abort.abort(timeoutError);
 
-      abortablePromise.abort();
-
-      reject(timeoutError);
-    }, delay);
+        abortablePromise.abort();
+      },
+      delay,
+      { signal },
+    );
 
     timeout.run();
 
     async function run() {
       try {
-        resolve(await promise);
+        resolve(
+          await (typeof promise == "function"
+            ? promise(abort.signal)
+            : promise),
+        );
       } catch (error) {
-        reject(error);
+        abort.abort(error);
       } finally {
         timeout?.abort();
       }
