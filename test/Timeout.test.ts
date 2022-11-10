@@ -104,25 +104,6 @@ describe("Timeout", () => {
     assertStrictEquals(i, 1);
   });
 
-  it("persistent property", () => {
-    const timeout = new Timeout(noop, 100, {
-      persistent: false,
-    });
-
-    timeout.ref();
-    assert(!timeout.persistent);
-
-    timeout.run();
-    assert(!timeout.persistent);
-
-    timeout.ref();
-    assert(timeout.persistent);
-
-    timeout.unref();
-    assert(!timeout.persistent);
-    timeout.abort();
-  });
-
   it("running and ran property", () => {
     const timeout = new Timeout(noop, 100);
     timeout.run();

@@ -84,7 +84,21 @@ export abstract class Timer<T extends any[] = any[]> {
     options: TimerOptions<T>,
   ) {
     // convert string to number of milliseconds
-    this.delay = typeof delay === "number" ? delay : strToMs(delay);
+    delay = typeof delay === "number" ? delay : strToMs(delay);
+
+    if (![1, 0].includes(Math.sign(delay))) {
+      throw new TypeError(
+        `Expected \`delay\` to be a positive number, got \`${delay}\``,
+      );
+    }
+
+    if (delay === Infinity) {
+      throw new TypeError(
+        "`delay` must not be `Infinity`",
+      );
+    }
+
+    this.delay = delay;
 
     // timeLeft is the `delay` at beginning
     this._timeLeft = this.delay;

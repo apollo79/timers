@@ -142,25 +142,6 @@ describe("Interval", () => {
     interval.abort();
   });
 
-  it("persistent property", () => {
-    const interval = new Interval(noop, 100, {
-      persistent: false,
-    });
-
-    interval.ref();
-    assert(!interval.persistent);
-
-    interval.run();
-    assert(!interval.persistent);
-
-    interval.ref();
-    assert(interval.persistent);
-
-    interval.unref();
-    assert(!interval.persistent);
-    interval.abort();
-  });
-
   it("running and ran property", () => {
     const interval = new Interval(noop, 100, {
       times: 2,

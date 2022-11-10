@@ -24,14 +24,6 @@ describe("pTimeout", () => {
     );
   });
 
-  it.ignore("throws when milliseconds is negative number", () => {
-    assertThrows(() => pTimeout(delay(50), -1), TypeError);
-  });
-
-  it.ignore("throws when milliseconds is NaN", () => {
-    assertThrows(() => pTimeout(delay(50), Number.NaN), TypeError);
-  });
-
   it("handles milliseconds being `Infinity`", async () => {
     assertStrictEquals(
       await pTimeout(delay(50).then(() => fixture), Infinity),

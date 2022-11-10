@@ -203,3 +203,5 @@ export {
   setInterval as setLongInterval,
   setTimeout as setLongTimeout,
 };
+
+export { Timer } from "./src/Timer.ts";
