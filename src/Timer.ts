@@ -7,6 +7,7 @@ export interface TimerOptions<T extends any[] = any[]> {
   signal?: AbortSignal;
   /** Indicates whether the process should continue to run as long as the timer exists. This is `true` by default. */
   persistent?: boolean;
+  silent?: boolean;
 }
 
 export const timers = new Map<number, Timer>();
@@ -116,6 +117,7 @@ export abstract class Timer<T extends any[] = any[]> {
     this.options = {
       args: (args ?? []) as T,
       persistent: this._persistent,
+      silent: false,
       ...options,
     };
 

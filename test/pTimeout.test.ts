@@ -2,7 +2,6 @@ import {
   assert,
   assertRejects,
   assertStrictEquals,
-  assertThrows,
 } from "https://deno.land/std@0.162.0/testing/asserts.ts";
 import {
   afterEach,

@@ -58,7 +58,14 @@ export class Timeout<T extends any[] = any[]> extends Timer<T> {
     if (this._timeLeft <= TIMEOUT_MAX) {
       this._timer = globalThis.setTimeout(() => {
         // call the callback with the given args
-        this.cb(...this.options.args!);
+        try {
+          this.cb(...this.options.args!);
+        } catch (e) {
+          if (!this.options.silent) {
+            this.abort();
+            throw e;
+          }
+        }
 
         this.options.signal?.removeEventListener("abort", this.abort);
 

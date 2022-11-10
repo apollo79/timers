@@ -61,7 +61,14 @@ export class Interval<T extends any[] = any[]> extends Timer<T> {
         this._runs++;
 
         // call the callback with the given args
-        this.cb(...this.options.args!);
+        try {
+          this.cb(...this.options.args!);
+        } catch (e) {
+          if (!this.options.silent) {
+            this.abort();
+            throw e;
+          }
+        }
 
         // reset timeLeft, so that the next run starts with the expected time
         this._timeLeft = this.delay;

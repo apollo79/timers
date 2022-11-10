@@ -1,6 +1,7 @@
 import {
   assert,
   assertStrictEquals,
+  assertThrows,
   unreachable,
 } from "https://deno.land/std@0.162.0/testing/asserts.ts";
 import {
@@ -174,6 +175,40 @@ describe("Interval", () => {
     for (let i = 0; i <= 7; i++) {
       time.tick(110);
     }
+  });
+
+  describe("silent option", () => {
+    it("throws by default", () => {
+      assertThrows(
+        () => {
+          const timeout = new Interval(() => {
+            throw new Error("test error");
+          }, 100);
+
+          timeout.run();
+
+          time.tick(100);
+        },
+        Error,
+        "test error",
+      );
+    });
+
+    it("doesn't throw when `silent` is enabled", () => {
+      const timeout = new Interval(
+        () => {
+          throw new Error("test error");
+        },
+        100,
+        {
+          silent: true,
+        },
+      );
+
+      timeout.run();
+
+      time.tick(100);
+    });
   });
 
   it("runs property", () => {
