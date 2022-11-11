@@ -49,7 +49,7 @@ describe("every", function () {
   });
 
   it("times", () => {
-    const e = new Every("50ms").times(3).do(fn);
+    const e = new Every("50ms").limit(3).do(fn);
 
     time.tick(60);
 
