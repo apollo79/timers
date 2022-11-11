@@ -1,8 +1,12 @@
 // deno-lint-ignore-file no-explicit-any
-import { Interval, Listener } from "../mod.ts";
+import { Interval, IntervalOptions, Listener } from "../mod.ts";
 
-export class Every {
-  protected _interval?: Interval<never[]>;
+// deno-lint-ignore no-empty-interface
+export interface EveryOptions<T extends any[] = any[]>
+  extends Omit<IntervalOptions<T>, "times"> {}
+
+export class Every<T extends any[] = any[]> {
+  protected _interval?: Interval<T>;
 
   get interval() {
     return this._interval;
@@ -10,7 +14,10 @@ export class Every {
 
   #limit = Infinity;
 
-  constructor(public readonly time: number | string) {
+  constructor(
+    public readonly time: number | string,
+    public readonly options: EveryOptions<T> = {},
+  ) {
   }
 
   limit(limit: number) {
@@ -29,7 +36,7 @@ export class Every {
    * runs the interval
    * @param cb
    */
-  do(cb: Listener<never[]>) {
+  do(cb: Listener<T>) {
     if (this.interval) {
       console.warn(
         "The interval is already running and gets cancelled now and restarts.",
@@ -38,9 +45,11 @@ export class Every {
       this.interval?.abort();
     }
 
-    this._interval = new Interval(cb.bind(this), this.time, {
+    const options = Object.assign(this.options, {
       times: this.#limit,
     });
+
+    this._interval = new Interval(cb.bind(this), this.time, options);
 
     this._interval.run();
 

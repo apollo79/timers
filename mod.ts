@@ -4,7 +4,7 @@
  */
 import { After } from "./src/After.ts";
 import { timers } from "./src/Timer.ts";
-import { Every } from "./src/Every.ts";
+import { Every, EveryOptions } from "./src/Every.ts";
 import { Interval, IntervalOptions } from "./src/Interval.ts";
 import { Timeout, TimeoutOptions } from "./src/Timeout.ts";
 
@@ -174,12 +174,14 @@ export function interval<T extends any[] = any[]>(
 }
 
 /**
- * @todo document, write tests and add to Readme
  * @param time
  * @returns
  */
-export function every(time: string | number) {
-  return new Every(time);
+export function every<T extends any[] = any[]>(
+  time: string | number,
+  options: EveryOptions<T> = {},
+) {
+  return new Every(time, options);
 }
 
 /**
@@ -187,8 +189,11 @@ export function every(time: string | number) {
  * @param time
  * @returns
  */
-export function after(time: string | number) {
-  return new After(time);
+export function after<T extends any[] = any[]>(
+  time: string | number,
+  options: TimeoutOptions<T> = {},
+) {
+  return new After(time, options);
 }
 
 export { pTimeout, TimeoutError } from "./src/pTimeout.ts";

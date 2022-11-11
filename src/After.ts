@@ -1,8 +1,8 @@
 // deno-lint-ignore-file no-explicit-any
-import { Listener, Timeout } from "../mod.ts";
+import { Listener, Timeout, TimeoutOptions } from "../mod.ts";
 
-export class After {
-  protected _timeout?: Timeout<never[]>;
+export class After<T extends any[] = any[]> {
+  protected _timeout?: Timeout<T>;
 
   get timeout() {
     return this._timeout;
@@ -10,12 +10,15 @@ export class After {
 
   protected cb?: Listener<never[]>;
 
-  constructor(public readonly time: number | string) {}
+  constructor(
+    public readonly time: number | string,
+    public readonly options: TimeoutOptions<T> = {},
+  ) {}
 
   /**
    * runs the timeout
    */
-  do(cb: Listener<never[]>) {
+  do(cb: Listener<T>) {
     if (this._timeout) {
       console.warn(
         "The interval is already running and gets cancelled now and restarts.",
@@ -24,7 +27,7 @@ export class After {
       this._timeout?.abort();
     }
 
-    this._timeout = new Timeout(cb.bind(this), this.time);
+    this._timeout = new Timeout(cb.bind(this), this.time, this.options);
 
     this._timeout.run();
 
