@@ -8,18 +8,18 @@ export class Every {
     return this._interval;
   }
 
-  #times = Infinity;
+  #limit = Infinity;
 
   constructor(public readonly time: number | string) {
   }
 
-  times(times: number) {
+  limit(limit: number) {
     if (this.interval) {
       console.warn(
         "The interval is already running. times() should only get called before do()",
       );
     } else {
-      this.#times = times;
+      this.#limit = limit;
     }
 
     return this;
@@ -39,7 +39,7 @@ export class Every {
     }
 
     this._interval = new Interval(cb.bind(this), this.time, {
-      times: this.#times,
+      times: this.#limit,
     });
 
     this._interval.run();
