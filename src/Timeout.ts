@@ -81,6 +81,10 @@ export class Timeout<T extends any[] = any[]> extends Timer<T> {
         this.#run();
       }, TIMEOUT_MAX);
     }
+
+    if (!this._persistent) {
+      this.unref();
+    }
   }
 
   run(): number {
@@ -94,10 +98,6 @@ export class Timeout<T extends any[] = any[]> extends Timer<T> {
       );
     } else {
       this.#run();
-
-      if (!this._persistent) {
-        this.unref();
-      }
 
       this._running = true;
     }
