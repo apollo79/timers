@@ -108,7 +108,7 @@ export function delay(
  *
  * @example
  * ```ts
- * import { times } from "https://deno.land/x/timers@v0.1.0/mod.ts";
+ * import { times } from "https://deno.land/x/timers@v0.2.0/mod.ts";
  *
  * const paragraph = document.querySelector("p.numbers");
  * const abortBtn = document.querySelector("button.abort");
@@ -146,6 +146,16 @@ export function times<T extends any[] = any[]>(
  * @param cb the callback to call
  * @param delay the delay as string containing the time in a human readable format (e.g. "1 day and 3hours") or a number of in milliseconds
  * @param options {@linkcode TimeoutOptions}
+ *
+ * @example
+ *
+ * ```typescript
+ * import { timeout } from "https://deno.land/x/timers@v0.2.0/mod.ts";
+ *
+ * const timeout = timeout(() => {
+ *   console.log("in 30 days");
+ * }, "30 days");
+ * ```
  */
 export function timeout<T extends any[] = any[]>(
   cb: Listener<T>,
@@ -162,6 +172,16 @@ export function timeout<T extends any[] = any[]>(
  * @param cb the callback to call
  * @param delay the delay in milliseconds
  * @param options {@linkcode IntervalOptions}
+ *
+ * @example
+ *
+ * ```typescript
+ * import { interval } from "https://deno.land/x/timers@v0.2.0/mod.ts";
+ *
+ * const interval = setInterval(() => {
+ *   console.log("every 30 days");
+ * }, "30 days");
+ * ```
  */
 export function interval<T extends any[] = any[]>(
   cb: Listener<T>,
@@ -174,8 +194,15 @@ export function interval<T extends any[] = any[]>(
 }
 
 /**
- * @param time
- * @returns
+ * @example
+ *
+ * ```typescript
+ * import { every } from "https://deno.land/x/timers@v0.2.0/mod.ts";
+ *
+ * every("1min").limit(60).do(() => {
+ *   console.log(new Date().toLocaleTimeString());
+ * });
+```
  */
 export function every<T extends any[] = any[]>(
   time: string | number,
@@ -185,9 +212,15 @@ export function every<T extends any[] = any[]>(
 }
 
 /**
- * @todo document, write tests and add to Readme
- * @param time
- * @returns
+ * @example
+ *
+ * ```typescript
+ * import { every } from "https://deno.land/x/timers@v0.2.0/mod.ts";
+ *
+ * after("1min").do(() => {
+ *   console.log(new Date().toLocaleTimeString());
+ * });
+```
  */
 export function after<T extends any[] = any[]>(
   time: string | number,
