@@ -5,10 +5,12 @@ export type Epoch =
   | "second"
   | "seconds"
   | "sec"
+  | "secs"
   | "s"
   | "minute"
   | "minutes"
   | "min"
+  | "mins"
   | "m"
   | "hour"
   | "hours"
@@ -24,10 +26,12 @@ export const epochs: Record<Epoch, number> = {
   second: 1000,
   seconds: 1000,
   sec: 1000,
+  secs: 1000,
   s: 1000,
   minute: 60000,
   minutes: 60000,
   min: 60000,
+  mins: 60000,
   m: 60000,
   hour: 3600000,
   hours: 3600000,
