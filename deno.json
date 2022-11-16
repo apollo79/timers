@@ -1,0 +1,5 @@
+{
+  "tasks": {
+    "test": "deno test --coverage=cov_profile && deno coverage cov_profile --lcov --output=cov_profile.lcov"
+  }
+}
