@@ -94,14 +94,14 @@ every("1minute").do(() => {
 #### supported format
 
 - ms, millisecond, milliseconds
-- s, sec, secs, second, milliseconds
+- s, sec, secs, second, seconds
 - m, min, mins, minute, minutes
 - h, hour, hours
 - d, day, days
 
 ##### Examples
 
-- `2 days, 5 hours and two minutes`
+- `2 days, 5 hours and 2 minutes`
 - `3sec, 2ms`
 - `5mins3secs`
 
@@ -110,7 +110,7 @@ every("1minute").do(() => {
 `timers` exports the function `delay`. The API is like the
 [delay function](https://deno.land/std/async/delay.ts) from deno's std library,
 but it returns an `AbortablePromise`, so you can abort the promise with calling
-`abort()` on it It has two options:
+`abort()` on it. It has two options:
 
 - `signal`: An AbortSignal that aborts the timeout. The delay function will
   reject
