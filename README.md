@@ -229,7 +229,7 @@ The function expects at least two arguments:
 - `delay`: The time in milliseconds after which the function rejects
 - `options` (not required):
   - `signal`: An `AbortSignal` to abort the function even before it rejects
-  - `fallbackFn`: Do something other than rejecting with an error on timeout. 
+  - `fallbackFn`: Do something other than rejecting with an error on timeout.
     You could for example retry.
   - `failMessage`: A custom error message. Default:
     `'Promise timed out after 50 milliseconds'`
@@ -307,8 +307,8 @@ clearInterval(interval);
 
 ### `Timeout` and `Interval` classes
 
-Under the hood, all of the functions listed above use the `Timeout` and `Interval`
-classes.\
+Under the hood, all of the functions listed above use the `Timeout` and
+`Interval` classes.\
 They are exported as well and you can use them to create timeouts without\
 running them directly.
 
@@ -324,13 +324,13 @@ const timeout = new Timeout(() => {
 notifyBtn.addEventListener("click", () => timeout.run(), { once: true });
 ```
 
-For `Timeout`, the following options are available: 
+For `Timeout`, the following options are available:
+
 - `signal`
-- `persistent` (only
-available in Deno) 
-- `silent` 
+- `persistent` (only available in Deno)
+- `silent`
 - `args`
-- `times` (only for `Interval`) 
+- `times` (only for `Interval`)
 
 #### Properties
 
@@ -341,11 +341,11 @@ available in Deno)
 - `isAborted`: A boolean indicating whether the timer has been aborted
 - `persistent` (only available in Deno): A boolean indicating whether the
   process should continues running as long as the timer exists. This is `true`
-  by default. 
-- _deprecated_: `timer`: The Id of the timer. Use `id` instead. 
+  by default.
+- _deprecated_: `timer`: The Id of the timer. Use `id` instead.
 - `ran`: A boolean indicating whether the timer ran already. Gets only set to
   `true` on `Interval` when the `times` option has been passed and the interval
-  has run `times` times. 
+  has run `times` times.
 - `running`: A boolean indicating whether the timeout is currently running
 
 ##### Interval only
