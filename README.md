@@ -9,6 +9,8 @@ All the timing functions you need - for Deno and the browser.
 
 ## Installation
 
+### deno.land
+
 Just import it directly from the [https://deno.land/x/](https://deno.land/x/)\
 registry
 
@@ -18,8 +20,24 @@ import {
   setInterval,
   setTimeout,
   times,
-} from "https://deno.land/x/timers@v0.2.0/mod.ts";
+} from "https://deno.land/x/timers@v0.2.3/mod.ts";
 ```
+
+### JSR
+
+#### deno
+
+```plaintext
+deno add @apollo79/timers
+```
+
+#### npm (use any of npx, yarn dlx, pnpm dlx, or bunx)
+
+```plaintext
+npx jsr add @apollo79/timers
+```
+
+The following examples will show code that uses `timers` from JSR.
 
 ## Features
 
@@ -46,7 +64,7 @@ import {
   clearTimeout,
   setInterval,
   setTimeout,
-} from "https://deno.land/x/timers@v0.2.0/mod.ts";
+} from "@apollo79/timers";
 
 const timeout = setTimeout(() => {
   console.log("in 30 days");
@@ -74,7 +92,7 @@ import {
   clearLongTimeout,
   setLongInterval,
   setLongTimeout,
-} from "https://deno.land/x/timers@v0.2.0/mod.ts";
+} from "@apollo79/timers";
 ```
 
 ### time strings
@@ -84,7 +102,7 @@ it is possible to use a time string as delay argument instead of the number of
 milliseconds. For example:
 
 ```typescript
-import { every } from "https://deno.land/x/timers@v0.2.0/mod.ts";
+import { every } from "@apollo79/timers";
 
 every("1minute").do(() => {
   console.log(new Date().toLocaleTimeString());
@@ -118,7 +136,7 @@ but it returns an `AbortablePromise`, so you can abort the promise with calling
   continue to run as long as the timer exists. This is `true` by default.
 
 ```typescript
-import { delay } from "https://deno.land/x/timers@v0.2.0/mod.ts";
+import { delay } from "@apollo79/timers";
 const MSG = "Please type your name";
 const info = document.querySelector("p.info");
 const nameInput = document.querySelector("input.name");
@@ -144,7 +162,7 @@ option. Instead of passing the args as rest parameter, like with `setInterval`,
 you must pass them as `array`, in order to have the other options.
 
 ```typescript
-import { times } from "https://deno.land/x/timers@v0.2.0/mod.ts";
+import { times } from "@apollo79/timers";
 
 const paragraph = document.querySelector("p.numbers");
 const abortBtn = document.querySelector("button.abort");
@@ -182,7 +200,7 @@ following options:
 - `silent`
 
 ```typescript
-import { every } from "https://deno.land/x/timers@v0.2.0/mod.ts";
+import { every } from "@apollo79/timers";
 
 every("1min").limit(60).do(() => {
   console.log(new Date().toLocaleTimeString());
@@ -201,7 +219,7 @@ available:
 - `silent`
 
 ```typescript
-import { every } from "https://deno.land/x/timers@v0.2.0/mod.ts";
+import { every } from "@apollo79/timers";
 
 after("1min").do(() => {
   console.log(new Date().toLocaleTimeString());
@@ -214,7 +232,7 @@ Adapted from [p-timeout](https://github.com/sindresorhus/p-timeout) Timeout a
 promise after a specified amount of time.
 
 ```typescript
-import { delay, pTimeout } from "https://deno.land/x/timers@v0.2.0/mod.ts";
+import { delay, pTimeout } from "@apollo79/timers";
 
 const delayedPromise = delay(500);
 
@@ -245,7 +263,7 @@ Instead of passing a `Promise` directly, you can pass a function that retuns a
 `Promise`:
 
 ```typescript
-import { pTimeout } from "https://deno.land/x/timers@v0.2.0/mod.ts";
+import { pTimeout } from "@apollo79/timers";
 
 const pingApi = () => fetch("/api");
 
@@ -256,7 +274,7 @@ The function can take an `AbortSignal` as parameter as well, which `abort` event
 fires, when the timeout times out:
 
 ```typescript
-import { pTimeout } from "https://deno.land/x/timers@v0.2.0/mod.ts";
+import { pTimeout } from "@apollo79/timers";
 
 const pingApi = (signal) => fetch("/api", { signal });
 
@@ -266,7 +284,7 @@ await pTimeout(pingApi, 50);
 `pTimeout` also passes down the signal it got:
 
 ```typescript
-import { delay, pTimeout } from "https://deno.land/x/timers@v0.2.0/mod.ts";
+import { delay, pTimeout } from "@apollo79/timers";
 
 const abort = new AbortController();
 const { signal } = abort;
@@ -290,7 +308,7 @@ of the argument expected by the callback. and supports these options:
 - `times` (only `interval`)
 
 ```typescript
-import { interval, timeout } from "https://deno.land/x/timers@v0.2.0/mod.ts";
+import { interval, timeout } from "@apollo79/timers";
 
 const timeout = timeout(() => {
   console.log("in 30 days");
@@ -313,7 +331,7 @@ They are exported as well and you can use them to create timeouts without\
 running them directly.
 
 ```typescript
-import { Timeout } from "https://deno.land/x/timers@v0.2.0/mod.ts";
+import { Timeout } from "@apollo79/timers";
 
 const notifyBtn = document.querySelector("button.notify");
 const timeout = new Timeout(() => {
