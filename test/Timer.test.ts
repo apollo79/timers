@@ -1,8 +1,5 @@
-import { describe, it } from "https://deno.land/std@0.162.0/testing/bdd.ts";
-import {
-  assert,
-  assertThrows,
-} from "https://deno.land/std@0.162.0/testing/asserts.ts";
+import { describe, it } from "@std/testing/bdd";
+import { assert, assertThrows } from "@std/assert";
 import { Fixture } from "./fixture.ts";
 
 const noop = () => {};

@@ -3,14 +3,9 @@ import {
   assertRejects,
   assertStrictEquals,
   unreachable,
-} from "https://deno.land/std@0.162.0/testing/asserts.ts";
-import {
-  afterEach,
-  beforeEach,
-  describe,
-  it,
-} from "https://deno.land/std@0.162.0/testing/bdd.ts";
-import { AbortablePromise, AbortException, delay } from "../mod.ts";
+} from "@std/assert";
+import { afterEach, beforeEach, describe, it } from "@std/testing/bdd";
+import { type AbortablePromise, AbortException, delay } from "../mod.ts";
 import pTimeout, { TimeoutError } from "../src/pTimeout.ts";
 
 const fixture = Symbol("fixture");
@@ -19,14 +14,20 @@ const fixtureError = new Error("fixture");
 describe("pTimeout", () => {
   it("resolves before timeout", async () => {
     assertStrictEquals(
-      await pTimeout(delay(50).then(() => fixture), 200),
+      await pTimeout(
+        delay(50).then(() => fixture),
+        200,
+      ),
       fixture,
     );
   });
 
   it("handles milliseconds being `Infinity`", async () => {
     assertStrictEquals(
-      await pTimeout(delay(50).then(() => fixture), Infinity),
+      await pTimeout(
+        delay(50).then(() => fixture),
+        Infinity,
+      ),
       fixture,
     );
   });
@@ -38,13 +39,16 @@ describe("pTimeout", () => {
   });
 
   it("rejects before timeout if specified promise rejects", async () => {
-    await assertRejects(() =>
-      pTimeout(
-        delay(50).then(() => {
-          throw fixtureError;
-        }),
-        200,
-      ), fixtureError.message);
+    await assertRejects(
+      () =>
+        pTimeout(
+          delay(50).then(() => {
+            throw fixtureError;
+          }),
+          200,
+        ),
+      fixtureError.message,
+    );
   });
 
   describe("fallback argument", () => {
@@ -66,26 +70,35 @@ describe("pTimeout", () => {
     });
 
     it("failError", async () => {
-      await assertRejects(() =>
-        pTimeout(delayed, 50, {
-          failError: new RangeError("cake"),
-        }), RangeError);
+      await assertRejects(
+        () =>
+          pTimeout(delayed, 50, {
+            failError: new RangeError("cake"),
+          }),
+        RangeError,
+      );
     });
 
     it("rejecting fallbackFn", async () => {
-      await assertRejects(() =>
-        pTimeout(delayed, 50, {
-          fallbackFn: () => Promise.reject(fixtureError),
-        }), fixtureError.message);
+      await assertRejects(
+        () =>
+          pTimeout(delayed, 50, {
+            fallbackFn: () => Promise.reject(fixtureError),
+          }),
+        fixtureError.message,
+      );
     });
 
     it("throwing fallbackFn", async () => {
-      await assertRejects(() =>
-        pTimeout(delayed, 50, {
-          fallbackFn() {
-            throw new RangeError("cake");
-          },
-        }), RangeError);
+      await assertRejects(
+        () =>
+          pTimeout(delayed, 50, {
+            fallbackFn() {
+              throw new RangeError("cake");
+            },
+          }),
+        RangeError,
+      );
     });
   });
 
@@ -124,10 +137,13 @@ describe("pTimeout", () => {
 
     abort.abort();
 
-    await assertRejects(() =>
-      pTimeout(delayed, 2000, {
-        signal,
-      }), AbortException);
+    await assertRejects(
+      () =>
+        pTimeout(delayed, 2000, {
+          signal,
+        }),
+      AbortException,
+    );
 
     delayed.abort();
   });
@@ -148,16 +164,13 @@ describe("pTimeout", () => {
 
       abort.abort();
 
-      await assertRejects(
-        () => pTimeout(fn, 200, { signal }),
-        AbortException,
-      );
+      await assertRejects(() => pTimeout(fn, 200, { signal }), AbortException);
     });
 
     describe("signal argument", () => {
       it("aborts on aborting internal signal", async () => {
         const fn = (signal: AbortSignal) =>
-          delay(100, { signal }).then(unreachable);
+          delay(100, { signal }).then(() => unreachable());
 
         await assertRejects(() => pTimeout(fn, 50), TimeoutError);
       });
@@ -167,7 +180,7 @@ describe("pTimeout", () => {
         const { signal } = abort;
 
         const fn = (signal: AbortSignal) =>
-          delay(100, { signal }).then(unreachable);
+          delay(100, { signal }).then(() => unreachable());
 
         delay(50).then(() => abort.abort());
 

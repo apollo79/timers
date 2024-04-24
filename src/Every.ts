@@ -1,7 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
-import { Interval, IntervalOptions, Listener } from "../mod.ts";
+import { Interval, type IntervalOptions, type Listener } from "../mod.ts";
 
-// deno-lint-ignore no-empty-interface
 export interface EveryOptions<T extends any[] = any[]>
   extends Omit<IntervalOptions<T>, "times"> {}
 

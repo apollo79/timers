@@ -6,17 +6,12 @@ import { After } from "../src/After.ts";
 import {
   assertSpyCall,
   assertSpyCalls,
-  Spy,
+  type Spy,
   spy,
-} from "https://deno.land/std@0.162.0/testing/mock.ts";
-import {
-  afterEach,
-  beforeEach,
-  describe,
-  it,
-} from "https://deno.land/std@0.162.0/testing/bdd.ts";
-import { assert } from "https://deno.land/std@0.162.0/testing/asserts.ts";
-import { FakeTime } from "https://deno.land/std@0.162.0/testing/time.ts";
+} from "@std/testing/mock";
+import { afterEach, beforeEach, describe, it } from "@std/testing/bdd";
+import { assert } from "@std/assert";
+import { FakeTime } from "@std/testing/time";
 
 describe("after", function () {
   let fn: Spy;

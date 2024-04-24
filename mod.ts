@@ -4,9 +4,9 @@
  */
 import { After } from "./src/After.ts";
 import { timers } from "./src/Timer.ts";
-import { Every, EveryOptions } from "./src/Every.ts";
-import { Interval, IntervalOptions } from "./src/Interval.ts";
-import { Timeout, TimeoutOptions } from "./src/Timeout.ts";
+import { Every, type EveryOptions } from "./src/Every.ts";
+import { Interval, type IntervalOptions } from "./src/Interval.ts";
+import { Timeout, type TimeoutOptions } from "./src/Timeout.ts";
 
 export type Listener<T extends any[] = any[]> = (...args: T) => void;
 

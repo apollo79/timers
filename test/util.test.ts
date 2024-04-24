@@ -1,5 +1,5 @@
-import { assertStrictEquals } from "https://deno.land/std@0.162.0/testing/asserts.ts";
-import { describe, it } from "https://deno.land/std@0.162.0/testing/bdd.ts";
+import { assertStrictEquals } from "@std/assert";
+import { describe, it } from "@std/testing/bdd";
 import { strToMs } from "../src/util.ts";
 
 const values = {

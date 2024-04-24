@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-import { Listener, Timeout, TimeoutOptions } from "../mod.ts";
+import { type Listener, Timeout, type TimeoutOptions } from "../mod.ts";
 
 export class After<T extends any[] = any[]> {
   protected _timeout?: Timeout<T>;

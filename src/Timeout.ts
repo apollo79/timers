@@ -1,8 +1,7 @@
 // deno-lint-ignore-file no-explicit-any
-import { Timer, TimerOptions } from "./Timer.ts";
-import { Listener, TIMEOUT_MAX } from "../mod.ts";
+import { Timer, type TimerOptions } from "./Timer.ts";
+import { type Listener, TIMEOUT_MAX } from "../mod.ts";
 
-// deno-lint-ignore no-empty-interface
 export interface TimeoutOptions<T extends any[] = any[]>
   extends TimerOptions<T> {}
 

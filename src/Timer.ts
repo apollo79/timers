@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-import { AbortException, Listener } from "../mod.ts";
+import { AbortException, type Listener } from "../mod.ts";
 import { strToMs } from "./util.ts";
 
 export interface TimerOptions<T extends any[] = any[]> {

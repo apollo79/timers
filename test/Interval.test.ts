@@ -3,20 +3,11 @@ import {
   assertStrictEquals,
   assertThrows,
   unreachable,
-} from "https://deno.land/std@0.162.0/testing/asserts.ts";
-import {
-  afterEach,
-  beforeEach,
-  describe,
-  it,
-} from "https://deno.land/std@0.162.0/testing/bdd.ts";
+} from "@std/assert";
+import { afterEach, beforeEach, describe, it } from "@std/testing/bdd";
 import { Interval, TIMEOUT_MAX } from "../mod.ts";
-import {
-  assertSpyCalls,
-  Spy,
-  spy,
-} from "https://deno.land/std@0.162.0/testing/mock.ts";
-import { FakeTime } from "https://deno.land/std@0.162.0/testing/time.ts";
+import { assertSpyCalls, type Spy, spy } from "@std/testing/mock";
+import { FakeTime } from "@std/testing/time";
 
 const noop = () => {};
 
