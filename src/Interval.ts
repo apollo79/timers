@@ -14,14 +14,14 @@ export class Interval<T extends any[] = any[]> extends Timer<T> {
   declare readonly options: IntervalOptions<T>;
   protected _runs: number;
 
-  get runs() {
+  get runs(): number {
     return this._runs;
   }
 
   /**
    * This will only be set to true, if the `times` options has been passed and the interval has run `times` often
    */
-  get ran() {
+  get ran(): boolean {
     return this._ran;
   }
 
@@ -37,7 +37,7 @@ export class Interval<T extends any[] = any[]> extends Timer<T> {
   constructor(
     cb: Listener<T>,
     delay: number | string = 0,
-    options: IntervalOptions<T> = {},
+    options: IntervalOptions<T> = {}
   ) {
     super(cb, delay, options);
 
@@ -104,11 +104,11 @@ export class Interval<T extends any[] = any[]> extends Timer<T> {
   run(): number {
     if (this._running) {
       console.warn(
-        "The interval is already running. The call to run will be ignored",
+        "The interval is already running. The call to run will be ignored"
       );
     } else if (this._isAborted) {
       console.warn(
-        "The interval has been aborted. The call to run will be ignored",
+        "The interval has been aborted. The call to run will be ignored"
       );
     } else {
       this.#run();

@@ -1,5 +1,8 @@
 {
   "tasks": {
     "test": "deno test --coverage=cov_profile && deno coverage cov_profile --lcov --output=cov_profile.lcov"
-  }
+  },
+  "name": "@apollo79/timers",
+  "version": "0.1.0",
+  "exports": "./mod.ts"
 }

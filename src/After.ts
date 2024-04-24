@@ -4,7 +4,7 @@ import { Listener, Timeout, TimeoutOptions } from "../mod.ts";
 export class After<T extends any[] = any[]> {
   protected _timeout?: Timeout<T>;
 
-  get timeout() {
+  get timeout(): Timeout<T> | undefined {
     return this._timeout;
   }
 
@@ -12,16 +12,16 @@ export class After<T extends any[] = any[]> {
 
   constructor(
     public readonly time: number | string,
-    public readonly options: TimeoutOptions<T> = {},
+    public readonly options: TimeoutOptions<T> = {}
   ) {}
 
   /**
    * runs the timeout
    */
-  do(cb: Listener<T>) {
+  do(cb: Listener<T>): After<T> {
     if (this._timeout) {
       console.warn(
-        "The interval is already running and gets cancelled now and restarts.",
+        "The interval is already running and gets cancelled now and restarts."
       );
 
       this._timeout?.abort();
@@ -34,7 +34,7 @@ export class After<T extends any[] = any[]> {
     return this;
   }
 
-  stop(reason?: any) {
+  stop(reason?: any): void {
     this._timeout?.abort(reason);
 
     delete this._timeout;

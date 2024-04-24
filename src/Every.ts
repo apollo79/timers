@@ -8,7 +8,7 @@ export interface EveryOptions<T extends any[] = any[]>
 export class Every<T extends any[] = any[]> {
   protected _interval?: Interval<T>;
 
-  get interval() {
+  get interval(): Interval<T> | undefined {
     return this._interval;
   }
 
@@ -16,14 +16,13 @@ export class Every<T extends any[] = any[]> {
 
   constructor(
     public readonly time: number | string,
-    public readonly options: EveryOptions<T> = {},
-  ) {
-  }
+    public readonly options: EveryOptions<T> = {}
+  ) {}
 
-  limit(limit: number) {
+  limit(limit: number): Every<T> {
     if (this.interval) {
       console.warn(
-        "The interval is already running. times() should only get called before do()",
+        "The interval is already running. times() should only get called before do()"
       );
     } else {
       this.#limit = limit;
@@ -36,10 +35,10 @@ export class Every<T extends any[] = any[]> {
    * runs the interval
    * @param cb
    */
-  do(cb: Listener<T>) {
+  do(cb: Listener<T>): Every<T> {
     if (this.interval) {
       console.warn(
-        "The interval is already running and gets cancelled now and restarts.",
+        "The interval is already running and gets cancelled now and restarts."
       );
 
       this.interval?.abort();
@@ -56,7 +55,7 @@ export class Every<T extends any[] = any[]> {
     return this;
   }
 
-  stop(reason?: any) {
+  stop(reason?: any): void {
     this.interval?.abort(reason);
 
     delete this._interval;

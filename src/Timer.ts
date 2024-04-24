@@ -10,7 +10,7 @@ export interface TimerOptions<T extends any[] = any[]> {
   silent?: boolean;
 }
 
-export const timers = new Map<number, Timer>();
+export const timers: Map<number, Timer> = new Map<number, Timer>();
 
 let nextId = 1;
 
@@ -47,7 +47,7 @@ export abstract class Timer<T extends any[] = any[]> {
   public readonly delay: number;
 
   /** Indicates whether the process should continue to run as long as the timer exists. This is `true` by default. */
-  get persistent() {
+  get persistent(): boolean {
     return this._persistent;
   }
 
@@ -55,19 +55,19 @@ export abstract class Timer<T extends any[] = any[]> {
    * The timer Id
    * @deprecated Don't use this as it doesn't represent the timer Id you should use with `clearTimeout` and `clearInterval`
    */
-  get timer() {
+  get timer(): number {
     return this.id;
   }
 
   /**
    * Indicates whether the timer is currently running
    */
-  get running() {
+  get running(): boolean {
     return this._running;
   }
 
   /** A boolean value that indicates whether the timer has been aborted */
-  get isAborted() {
+  get isAborted(): boolean {
     return this._isAborted;
   }
 
@@ -82,21 +82,19 @@ export abstract class Timer<T extends any[] = any[]> {
   constructor(
     public readonly cb: Listener<T>,
     delay: number | string,
-    options: TimerOptions<T>,
+    options: TimerOptions<T>
   ) {
     // convert string to number of milliseconds
     delay = typeof delay === "number" ? delay : strToMs(delay);
 
     if (![1, 0].includes(Math.sign(delay))) {
       throw new TypeError(
-        `Expected \`delay\` to be a positive number, got \`${delay}\``,
+        `Expected \`delay\` to be a positive number, got \`${delay}\``
       );
     }
 
     if (delay === Infinity) {
-      throw new TypeError(
-        "`delay` must not be `Infinity`",
-      );
+      throw new TypeError("`delay` must not be `Infinity`");
     }
 
     this.delay = delay;

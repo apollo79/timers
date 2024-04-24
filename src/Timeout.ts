@@ -30,7 +30,7 @@ export class Timeout<T extends any[] = any[]> extends Timer<T> {
 
   protected _ran = false;
 
-  get ran() {
+  get ran(): boolean {
     return this._ran;
   }
 
@@ -45,7 +45,7 @@ export class Timeout<T extends any[] = any[]> extends Timer<T> {
   constructor(
     cb: Listener<T>,
     delay: number | string = 0,
-    options: TimeoutOptions<T> = {},
+    options: TimeoutOptions<T> = {}
   ) {
     super(cb, delay, options);
   }
@@ -90,11 +90,11 @@ export class Timeout<T extends any[] = any[]> extends Timer<T> {
   run(): number {
     if (this._running) {
       console.warn(
-        "The timeout is already running. The call to run will be ignored",
+        "The timeout is already running. The call to run will be ignored"
       );
     } else if (this._isAborted) {
       console.warn(
-        "The timeout has been aborted. The call to run will be ignored",
+        "The timeout has been aborted. The call to run will be ignored"
       );
     } else {
       this.#run();
