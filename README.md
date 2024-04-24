@@ -11,7 +11,7 @@ All the timing functions you need - for Deno and the browser.
 
 ### deno.land
 
-Just import it directly from the [https://deno.land/x/](https://deno.land/x/)\
+Just import it directly from the [https://deno.land/x/](https://deno.land/x/)
 registry
 
 ```typescript
