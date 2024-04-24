@@ -79,7 +79,7 @@ export function clearInterval(id = 0): void {
  */
 export function delay(
   delay: number | string,
-  options: Omit<TimeoutOptions, "args"> = {}
+  options: Omit<TimeoutOptions, "args"> = {},
 ): AbortablePromise<void> {
   let timeout: Timeout | undefined;
 
@@ -91,7 +91,7 @@ export function delay(
         resolve();
       },
       delay,
-      options
+      options,
     );
 
     timeout.aborted.then(reject);
@@ -139,7 +139,7 @@ export function times<T extends any[] = any[]>(
   cb: Listener<T>,
   delay: number | string,
   times: number,
-  options: Omit<IntervalOptions<T>, "times"> = {}
+  options: Omit<IntervalOptions<T>, "times"> = {},
 ): number {
   const interval = new Interval<T>(cb, delay, {
     ...options,
@@ -168,7 +168,7 @@ export function times<T extends any[] = any[]>(
 export function timeout<T extends any[] = any[]>(
   cb: Listener<T>,
   delay?: number | string,
-  options: TimeoutOptions<T> = {}
+  options: TimeoutOptions<T> = {},
 ): number {
   const interval = new Timeout<T>(cb, delay, options);
 
@@ -194,7 +194,7 @@ export function timeout<T extends any[] = any[]>(
 export function interval<T extends any[] = any[]>(
   cb: Listener<T>,
   delay?: number | string,
-  options: IntervalOptions<T> = {}
+  options: IntervalOptions<T> = {},
 ): number {
   const interval = new Interval<T>(cb, delay, options);
 
@@ -214,7 +214,7 @@ export function interval<T extends any[] = any[]>(
  */
 export function every<T extends any[] = any[]>(
   time: string | number,
-  options: EveryOptions<T> = {}
+  options: EveryOptions<T> = {},
 ): Every<T> {
   return new Every(time, options);
 }
@@ -232,7 +232,7 @@ export function every<T extends any[] = any[]>(
  */
 export function after<T extends any[] = any[]>(
   time: string | number,
-  options: TimeoutOptions<T> = {}
+  options: TimeoutOptions<T> = {},
 ): After<T> {
   return new After(time, options);
 }

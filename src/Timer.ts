@@ -82,14 +82,14 @@ export abstract class Timer<T extends any[] = any[]> {
   constructor(
     public readonly cb: Listener<T>,
     delay: number | string,
-    options: TimerOptions<T>
+    options: TimerOptions<T>,
   ) {
     // convert string to number of milliseconds
     delay = typeof delay === "number" ? delay : strToMs(delay);
 
     if (![1, 0].includes(Math.sign(delay))) {
       throw new TypeError(
-        `Expected \`delay\` to be a positive number, got \`${delay}\``
+        `Expected \`delay\` to be a positive number, got \`${delay}\``,
       );
     }
 

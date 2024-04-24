@@ -373,12 +373,6 @@ To run tests, clone the repository, and run the following command
 deno test
 ```
 
-or, without cloning
-
-```plaintext
-deno test https://deno.land/x/timers@v0.2.0/test.ts
-```
-
 ## Contributing
 
 Contributions are always welcome!

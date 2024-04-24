@@ -39,7 +39,7 @@ export interface PTimeoutOptions<T> {
 export function pTimeout<T>(
   promise: Promise<T> | ((signal: AbortSignal) => Promise<T>),
   delay: number | string,
-  options: PTimeoutOptions<T> = {}
+  options: PTimeoutOptions<T> = {},
 ): AbortablePromise<T> {
   const { signal, fallbackFn, failError, failMessage } = options;
 
@@ -53,7 +53,7 @@ export function pTimeout<T>(
       () => {
         reject(abort.signal.reason);
       },
-      { once: true }
+      { once: true },
     );
 
     if (delay === Infinity && !signal?.aborted) {
@@ -69,7 +69,7 @@ export function pTimeout<T>(
       signal.addEventListener(
         "abort",
         () => abort.abort(new AbortException(signal.reason)),
-        { once: true }
+        { once: true },
       );
     }
 
@@ -93,8 +93,8 @@ export function pTimeout<T>(
           return;
         }
 
-        const message =
-          failMessage ?? `Promise timed out after ${delay} milliseconds`;
+        const message = failMessage ??
+          `Promise timed out after ${delay} milliseconds`;
         const timeoutError = failError ?? new TimeoutError(message);
 
         abort.abort(timeoutError);
@@ -102,7 +102,7 @@ export function pTimeout<T>(
         abortablePromise.abort();
       },
       delay,
-      { signal }
+      { signal },
     );
 
     timeout.run();
@@ -110,7 +110,9 @@ export function pTimeout<T>(
     async function run() {
       try {
         resolve(
-          await (typeof promise == "function" ? promise(abort.signal) : promise)
+          await (typeof promise == "function"
+            ? promise(abort.signal)
+            : promise),
         );
       } catch (error) {
         abort.abort(error);

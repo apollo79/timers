@@ -15,13 +15,13 @@ export class Every<T extends any[] = any[]> {
 
   constructor(
     public readonly time: number | string,
-    public readonly options: EveryOptions<T> = {}
+    public readonly options: EveryOptions<T> = {},
   ) {}
 
   limit(limit: number): Every<T> {
     if (this.interval) {
       console.warn(
-        "The interval is already running. times() should only get called before do()"
+        "The interval is already running. times() should only get called before do()",
       );
     } else {
       this.#limit = limit;
@@ -37,7 +37,7 @@ export class Every<T extends any[] = any[]> {
   do(cb: Listener<T>): Every<T> {
     if (this.interval) {
       console.warn(
-        "The interval is already running and gets cancelled now and restarts."
+        "The interval is already running and gets cancelled now and restarts.",
       );
 
       this.interval?.abort();

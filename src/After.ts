@@ -12,7 +12,7 @@ export class After<T extends any[] = any[]> {
 
   constructor(
     public readonly time: number | string,
-    public readonly options: TimeoutOptions<T> = {}
+    public readonly options: TimeoutOptions<T> = {},
   ) {}
 
   /**
@@ -21,7 +21,7 @@ export class After<T extends any[] = any[]> {
   do(cb: Listener<T>): After<T> {
     if (this._timeout) {
       console.warn(
-        "The interval is already running and gets cancelled now and restarts."
+        "The interval is already running and gets cancelled now and restarts.",
       );
 
       this._timeout?.abort();
