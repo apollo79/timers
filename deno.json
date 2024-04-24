@@ -4,5 +4,8 @@
   },
   "name": "@apollo79/timers",
   "version": "0.1.0",
-  "exports": "./mod.ts"
+  "exports": "./mod.ts",
+  "publish": {
+    "exclude": [".github", ".vscode", "test"]
+  }
 }
