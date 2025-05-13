@@ -1,30 +1,58 @@
 // deno-lint-ignore-file no-explicit-any
 /**
- * This module is browser compatible
+ * This is the main module of the @apollo79/timers package.
+ * It mainly exports all the functions of the package and also adds some trivial abstractions.
+ * @module
  */
+
 import { After } from "./src/After.ts";
 import { timers } from "./src/Timer.ts";
 import { Every, type EveryOptions } from "./src/Every.ts";
 import { Interval, type IntervalOptions } from "./src/Interval.ts";
 import { Timeout, type TimeoutOptions } from "./src/Timeout.ts";
 
+/**
+ * The type of the callback expected by all the functions this package provides
+ */
 export type Listener<T extends any[] = any[]> = (...args: T) => void;
 
+/**
+ * The normal maximum timeout for timing functions in browsers and js engines
+ * This maximum timeout does not apply to this package as it includes mechanisms to make longer timeouts work.
+ */
 export const TIMEOUT_MAX = 2147483647; // 2^31-1
 
+/**
+ * A special exception type used when a timer gets aborted.
+ */
 export class AbortException extends DOMException {
   constructor(public override cause?: any) {
     super("The timer was aborted.", "AbortException");
   }
 }
 
+/**
+ * This interface expands the Promise type with an `abort` method. This is used in `pTimeout`
+ */
 export interface AbortablePromise<T> extends Promise<T> {
   /**
-   * Clear the timeout.
+   * Clears the timeout
    */
   abort: () => void;
 }
 
+/**
+ * Non-strictly typed setTimeout function, replaces the standard setTimeout, but with support for longer timeouts
+ *
+ * ```ts
+ * setTimeout(() => { console.log('hello'); }, 500);
+ * ```
+ *
+ * @param cb the callback to call after the specified delay
+ * @param delay the delay after which to call the callback in milliseconds
+ * @param args arguments to pass to the callback
+ * @returns the timer's id, which can be used with {@link clearTimeout}
+ */
 export function setTimeout(
   cb: Listener,
   delay?: number,
@@ -37,6 +65,19 @@ export function setTimeout(
   return timeout.run();
 }
 
+/**
+ * Non-strictly typed setInterval function, replaces the standard setInterval, but with support for longer timeouts
+ *
+ * ```ts
+ * // Outputs 'hello' to the console every 500ms
+ * setInterval(() => { console.log('hello'); }, 500)
+ * ```
+ *
+ * @param cb the callback to call every [`delay`] milliseconds
+ * @param delay the delay after which to call the callback in milliseconds
+ * @param args arguments to pass to the callback
+ * @returns the timer's id, which can be used with {@link clearInterval}
+ */
 export function setInterval(
   cb: Listener,
   delay?: number,
@@ -49,17 +90,38 @@ export function setInterval(
   return interval.run();
 }
 
+/**
+ * Cancels a scheduled action initiated by {@link setTimeout}.
+ *
+ * ```ts
+ * const id = setTimeout(() => {console.log('hello');}, 500);
+ * // ...
+ * clearTimeout(id);
+ * ```
+ *
+ * @param id the timer's id
+ */
 export function clearTimeout(id = 0): void {
   timers.get(id)?.abort();
 }
 
+/**
+ * Cancels a scheduled action initiated by {@link setInterval}.
+ *
+ * ```ts
+ * const id = setInterval(() => {console.log('hello');}, 500);
+ * // ...
+ * clearInterval(id);
+ * ```
+ *
+ * @param id the timer's id
+ */
 export function clearInterval(id = 0): void {
   clearTimeout(id);
 }
 
 /**
- * Resolves after the given number of milliseconds.
- * @param delay the delay as string containing the time in a human readable format (e.g. "1 day and 3hours") or a number of in milliseconds
+ * Returns a promise which resolves after the given number of milliseconds.
  *
  * ```ts
  * const MSG = "Please type your name";
@@ -75,7 +137,11 @@ export function clearInterval(id = 0): void {
  * });
  *
  * info.textContent = MSG;
-```
+ * ```
+ *
+ * @param delay the delay as string containing the time in a human readable format (e.g. "1 day and 3hours") or a number of milliseconds
+ * @param options {@link TimeoutOptions}
+ * @returns an {@link AbortablePromise}
  */
 export function delay(
   delay: number | string,
@@ -112,12 +178,9 @@ export function delay(
 }
 
 /**
- * execute a callback specified times with delay
+ * Executes a callback [specified times] with delay.
  *
- * @example
  * ```ts
- * import { times } from "https://deno.land/x/timers@v0.2.0/mod.ts";
- *
  * const paragraph = document.querySelector("p.numbers");
  * const abortBtn = document.querySelector("button.abort");
  * const abort = new AbortController();
@@ -133,7 +196,12 @@ export function delay(
  * }, 200, 20, {
  *     signal
  * });
-```
+ * ```
+ * @param cb the callback to call
+ * @param delay the delay as string containing the time in a human readable format (e.g. "1 day and 3hours") or a number of milliseconds
+ * @param times how often the callback should be called
+ * @param options {@link TimeoutOptions}
+ * @returns the timer's id, which can be used with {@link clearInterval}
  */
 export function times<T extends any[] = any[]>(
   cb: Listener<T>,
@@ -150,20 +218,18 @@ export function times<T extends any[] = any[]>(
 }
 
 /**
- * A typed version of {@linkcode setTimeout}
- * @param cb the callback to call
- * @param delay the delay as string containing the time in a human readable format (e.g. "1 day and 3hours") or a number of in milliseconds
- * @param options {@linkcode TimeoutOptions}
+ * A typed version of {@link setTimeout}
  *
- * @example
- *
- * ```typescript
- * import { timeout } from "https://deno.land/x/timers@v0.2.0/mod.ts";
- *
+ * ```ts
  * const timeout = timeout(() => {
  *   console.log("in 30 days");
  * }, "30 days");
  * ```
+ *
+ * @param cb the callback to call
+ * @param delay the delay as string containing the time in a human readable format (e.g. "1 day and 3hours") or a number of in milliseconds
+ * @param options {@link TimeoutOptions}
+ * @returns the timer's id, which can be used with {@link clearTimeout}
  */
 export function timeout<T extends any[] = any[]>(
   cb: Listener<T>,
@@ -176,20 +242,18 @@ export function timeout<T extends any[] = any[]>(
 }
 
 /**
- * A typed version of {@linkcode setInterval}
- * @param cb the callback to call
- * @param delay the delay in milliseconds
- * @param options {@linkcode IntervalOptions}
+ * A typed version of {@link setInterval}
  *
- * @example
- *
- * ```typescript
- * import { interval } from "https://deno.land/x/timers@v0.2.0/mod.ts";
- *
- * const interval = setInterval(() => {
+ * ```ts
+ * const interval = interval(() => {
  *   console.log("every 30 days");
  * }, "30 days");
  * ```
+ *
+ * @param cb the callback to call
+ * @param delay the delay as string containing the time in a human readable format (e.g. "1 day and 3hours") or a number of in milliseconds
+ * @param options {@link IntervalOptions}
+ * @returns the timer's id, which can be used with {@link clearInterval}
  */
 export function interval<T extends any[] = any[]>(
   cb: Listener<T>,
@@ -202,15 +266,18 @@ export function interval<T extends any[] = any[]>(
 }
 
 /**
- * @example
+ * Uses chained methods to control an interval.
  *
- * ```typescript
- * import { every } from "https://deno.land/x/timers@v0.2.0/mod.ts";
- *
+ * ```ts
  * every("1min").limit(60).do(() => {
  *   console.log(new Date().toLocaleTimeString());
  * });
-```
+ * ```
+ *
+ * @param time the time after which the callback (specified via the `do` method)
+ * as string containing the time in a human readable format (e.g. "1 day and 3hours") or a number of in milliseconds
+ * @param options {@link EveryOptions}
+ * @returns an instance of the {@link Every} class, on which one can call the `limit`, `do` and `stop` methods
  */
 export function every<T extends any[] = any[]>(
   time: string | number,
@@ -220,15 +287,18 @@ export function every<T extends any[] = any[]>(
 }
 
 /**
- * @example
+ * Uses chained methods to control a timeout.
  *
- * ```typescript
- * import { every } from "https://deno.land/x/timers@v0.2.0/mod.ts";
- *
+ * ```ts
  * after("1min").do(() => {
  *   console.log(new Date().toLocaleTimeString());
  * });
-```
+ * ```
+ *
+ * @param time the time after which the callback (specified via the `do` method)
+ * as string containing the time in a human readable format (e.g. "1 day and 3hours") or a number of in milliseconds
+ * @param options {@link EveryOptions}
+ * @returns an instance of the {@link After} class, on which one can call the `do` and `stop` methods
  */
 export function after<T extends any[] = any[]>(
   time: string | number,
