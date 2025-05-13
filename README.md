@@ -3,25 +3,10 @@
 All the timing functions you need - for Deno and the browser.
 
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
-[![CodeQL](https://github.com/apollo79/timers/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/apollo79/timers/actions/workflows/codeql-analysis.yml)
 [![Deno](https://github.com/apollo79/timers/actions/workflows/deno.yml/badge.svg)](https://github.com/apollo79/timers/actions/workflows/deno.yml)
 [![codecov](https://codecov.io/github/apollo79/timers/branch/main/graph/badge.svg?token=SSNB2MHK3O)](https://codecov.io/github/apollo79/timers)
 
 ## Installation
-
-### deno.land
-
-Just import it directly from the [https://deno.land/x/](https://deno.land/x/)
-registry
-
-```typescript
-import {
-  delay,
-  setInterval,
-  setTimeout,
-  times,
-} from "https://deno.land/x/timers@v0.2.3/mod.ts";
-```
 
 ### JSR
 
@@ -58,7 +43,7 @@ _You can't use the native functions mixed with the functions exported by this
 module! So, if you import `setTimeout`, you should import `clearTimeout` as
 well, as the native function won't clear the timeout!_
 
-```typescript
+```ts
 import {
   clearInterval,
   clearTimeout,
@@ -86,7 +71,7 @@ If you don't want the native functions overwritten, `setTimeout` and
 This also applies to `clearTimeout` and `clearInterval`. Also you can at any
 time use `globalThis.setTimeout`, which applies to the other functions as well
 
-```typescript
+```ts
 import {
   clearLongInterval,
   clearLongTimeout,
@@ -101,7 +86,7 @@ With each function expect `setInterval` and `setTimeout`, that `timers` exports,
 it is possible to use a time string as delay argument instead of the number of
 milliseconds. For example:
 
-```typescript
+```ts
 import { every } from "@apollo79/timers";
 
 every("1minute").do(() => {
@@ -135,7 +120,7 @@ but it returns an `AbortablePromise`, so you can abort the promise with calling
 - `persistent` (only available in Deno): Indicates whether the process should
   continue to run as long as the timer exists. This is `true` by default.
 
-```typescript
+```ts
 import { delay } from "@apollo79/timers";
 const MSG = "Please type your name";
 const info = document.querySelector("p.info");
@@ -161,7 +146,7 @@ options, plus the `silent` (supresses errors in the callback) and the `args`
 option. Instead of passing the args as rest parameter, like with `setInterval`,
 you must pass them as `array`, in order to have the other options.
 
-```typescript
+```ts
 import { times } from "@apollo79/timers";
 
 const paragraph = document.querySelector("p.numbers");
@@ -199,7 +184,7 @@ following options:
 - `args`
 - `silent`
 
-```typescript
+```ts
 import { every } from "@apollo79/timers";
 
 every("1min").limit(60).do(() => {
@@ -218,7 +203,7 @@ available:
 - `args`
 - `silent`
 
-```typescript
+```ts
 import { every } from "@apollo79/timers";
 
 after("1min").do(() => {
@@ -231,7 +216,7 @@ after("1min").do(() => {
 Adapted from [p-timeout](https://github.com/sindresorhus/p-timeout) Timeout a
 promise after a specified amount of time.
 
-```typescript
+```ts
 import { delay, pTimeout } from "@apollo79/timers";
 
 const delayedPromise = delay(500);
@@ -262,7 +247,7 @@ method.
 Instead of passing a `Promise` directly, you can pass a function that retuns a
 `Promise`:
 
-```typescript
+```ts
 import { pTimeout } from "@apollo79/timers";
 
 const pingApi = () => fetch("/api");
@@ -273,7 +258,7 @@ await pTimeout(pingApi, "50 ms");
 The function can take an `AbortSignal` as parameter as well, which `abort` event
 fires, when the timeout times out:
 
-```typescript
+```ts
 import { pTimeout } from "@apollo79/timers";
 
 const pingApi = (signal) => fetch("/api", { signal });
@@ -283,7 +268,7 @@ await pTimeout(pingApi, 50);
 
 `pTimeout` also passes down the signal it got:
 
-```typescript
+```ts
 import { delay, pTimeout } from "@apollo79/timers";
 
 const abort = new AbortController();
@@ -307,7 +292,7 @@ of the argument expected by the callback. and supports these options:
 - `args`
 - `times` (only `interval`)
 
-```typescript
+```ts
 import { interval, timeout } from "@apollo79/timers";
 
 const timeout = timeout(() => {
@@ -330,7 +315,7 @@ Under the hood, all of the functions listed above use the `Timeout` and
 They are exported as well and you can use them to create timeouts without\
 running them directly.
 
-```typescript
+```ts
 import { Timeout } from "@apollo79/timers";
 
 const notifyBtn = document.querySelector("button.notify");

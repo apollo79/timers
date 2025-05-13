@@ -140,7 +140,7 @@ export abstract class Timer<T extends any[] = any[]> {
   }
 
   /**
-   * makes the process not continue to run as long as the timer exists
+   * Makes the timer of the given id not block the event loop from finishing.
    */
   unref() {
     if (this._persistent && this._timer) {
@@ -159,7 +159,7 @@ export abstract class Timer<T extends any[] = any[]> {
   }
 
   /**
-   * makes the process not continue to run as long as the timer exists
+   * Makes the timer of the given id block the event loop from finishing.
    */
   ref() {
     if (!this._persistent && this._timer) {
@@ -178,13 +178,13 @@ export abstract class Timer<T extends any[] = any[]> {
   }
 
   /**
-   * runs the timer
-   * @returns the timer ID
+   * Runs the timer.
+   * @returns the timer's id
    */
   abstract run(): number;
 
   /**
-   * clear without resolve {@linkcode Timer.aborted}
+   * Clears without resolving {@link Timer.aborted}.
    */
   protected clear() {
     // clearTimeout and clearInterval are interchangeable, this is ugly, but works
@@ -192,8 +192,8 @@ export abstract class Timer<T extends any[] = any[]> {
   }
 
   /**
-   * aborts the timer
-   * @param reason
+   * Aborts the timer.
+   * @param reason optional reason for aborting
    */
   abort = (reason?: any): void => {
     this.clear();

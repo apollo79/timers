@@ -18,14 +18,8 @@ export interface PTimeoutOptions<T> {
 }
 
 /**
- * Timeout a promise after a specified amount of time.
- * @param options.promise - Promise to decorate.
- * @param options.milliseconds - Milliseconds before timing out.
- * @param options.fallbackFn - Do something other than rejecting with an error on timeout. You could for example retry.
- * @param options.failMessage - Specify a custom error message. Default: `'Promise timed out after 50 milliseconds'`.
- * @param options.failError - Specify a custom `Error`. It's recommended to sub-class {@linkcode TimeoutError}.
- * @returns A decorated `options.promise` that times out after `options.milliseconds` time. It has a `.clear()` method that clears the timeout.
- * @example
+ * Times out a promise after a specified amount of time.
+ *
  * ```
  * import pTimeout from 'https://deno.land/x/timers@v0.2.0/mod.ts'
  * const delayedPromise = new Promise(resolve => setTimeout(resolve, 500))
@@ -35,6 +29,13 @@ export interface PTimeoutOptions<T> {
  * })
  * //=> [TimeoutError: Promise timed out after 50 milliseconds]
  * ```
+ *
+ * @param options.promise - Promise to decorate.
+ * @param options.milliseconds - Milliseconds before timing out.
+ * @param options.fallbackFn - Do something other than rejecting with an error on timeout. You could for example retry.
+ * @param options.failMessage - Specify a custom error message. Default: `'Promise timed out after 50 milliseconds'`.
+ * @param options.failError - Specify a custom `Error`. It's recommended to sub-class {@link TimeoutError}.
+ * @returns A decorated `options.promise` that times out after `options.milliseconds` time. It has a `.clear()` method that clears the timeout.
  */
 export function pTimeout<T>(
   promise: Promise<T> | ((signal: AbortSignal) => Promise<T>),

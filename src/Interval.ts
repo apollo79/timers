@@ -41,10 +41,16 @@ export class Interval<T extends any[] = any[]> extends Timer<T> {
   ) {
     super(cb, delay, options);
 
-    const { times } = options;
+    let { times } = options;
+
+    if (times === undefined) {
+      times = Infinity;
+    } else if (times < 0) {
+      throw new Error("`times` must be 0 or positive");
+    }
 
     this.options = {
-      times: times ?? Infinity,
+      times,
       ...this.options,
     };
 
@@ -52,7 +58,7 @@ export class Interval<T extends any[] = any[]> extends Timer<T> {
   }
 
   /**
-   * private run method to deal with `_running` property, as the method may call itself
+   * Private run method to deal with the {@link Timer._running} property, as the method may call itself
    */
   #run() {
     if (this._timeLeft <= TIMEOUT_MAX) {
@@ -101,6 +107,10 @@ export class Interval<T extends any[] = any[]> extends Timer<T> {
     }
   }
 
+  /**
+   * Runs the interval.
+   * @returns the timer's id
+   */
   run(): number {
     if (this._running) {
       console.warn(

@@ -4,6 +4,18 @@ import { Interval, type IntervalOptions, type Listener } from "../mod.ts";
 export interface EveryOptions<T extends any[] = any[]>
   extends Omit<IntervalOptions<T>, "times"> {}
 
+/**
+ * @class A class which provides methods to chain together for controlling an interval.
+ * Should be used with the `every` function.
+ *
+ * ```ts
+ * const interval = new Every("1min");
+ *
+ * interval.limit(60).do(() => {
+ *   console.log(new Date().toLocaleTimeString());
+ * });
+ * ```
+ */
 export class Every<T extends any[] = any[]> {
   protected _interval?: Interval<T>;
 
@@ -18,6 +30,11 @@ export class Every<T extends any[] = any[]> {
     public readonly options: EveryOptions<T> = {},
   ) {}
 
+  /**
+   * Limits the times the callback (provided via the `do` method) gets executed.
+   * @param limit the limit as a positive number
+   * @returns the object for chained calls
+   */
   limit(limit: number): Every<T> {
     if (this.interval) {
       console.warn(
@@ -31,8 +48,9 @@ export class Every<T extends any[] = any[]> {
   }
 
   /**
-   * runs the interval
+   * Runs the interval.
    * @param cb
+   * @returns the object for chained calls
    */
   do(cb: Listener<T>): Every<T> {
     if (this.interval) {
@@ -54,6 +72,10 @@ export class Every<T extends any[] = any[]> {
     return this;
   }
 
+  /**
+   * Aborts the timer.
+   * @param reason optional reason for aborting
+   */
   stop(reason?: any): void {
     this.interval?.abort(reason);
 

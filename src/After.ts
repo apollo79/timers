@@ -1,6 +1,18 @@
 // deno-lint-ignore-file no-explicit-any
 import { type Listener, Timeout, type TimeoutOptions } from "../mod.ts";
 
+/**
+ * @class A class which provides methods to chain together for controlling a timeout.
+ * Should be used with the `after` function.
+ *
+ * ```ts
+ * const timeout = new After(2000);
+ *
+ * timeout.do(() => {
+ *   console.log(new Date().toLocaleTimeString());
+ * })
+ * ```
+ */
 export class After<T extends any[] = any[]> {
   protected _timeout?: Timeout<T>;
 
@@ -16,7 +28,9 @@ export class After<T extends any[] = any[]> {
   ) {}
 
   /**
-   * runs the timeout
+   * Runs the timeout with the provided callback.
+   * @param cb the callback to call
+   * @returns the object for chained calls
    */
   do(cb: Listener<T>): After<T> {
     if (this._timeout) {
@@ -34,9 +48,13 @@ export class After<T extends any[] = any[]> {
     return this;
   }
 
+  /**
+   * Aborts the timer.
+   * @param reason optional reason for aborting
+   */
   stop(reason?: any): void {
     this._timeout?.abort(reason);
 
-    delete this._timeout;
+    this._timeout = undefined;
   }
 }

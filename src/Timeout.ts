@@ -7,7 +7,7 @@ export interface TimeoutOptions<T extends any[] = any[]>
 
 /**
  * @class The class representing a timeout
- * @example
+ *
  * ```ts
  * const abort = new AbortController();
  * const { signal } = abort;
@@ -50,7 +50,7 @@ export class Timeout<T extends any[] = any[]> extends Timer<T> {
   }
 
   /**
-   * private run method to deal with `_running` property, as the method may call itself
+   * Private run method to deal with the {@link Timer._running} property, as the method may call itself
    */
   #run() {
     // if the remaining time to wait is in the range that is possible to handle for the native methods
@@ -85,7 +85,10 @@ export class Timeout<T extends any[] = any[]> extends Timer<T> {
       this.unref();
     }
   }
-
+  /**
+   * Runs the interval.
+   * @returns the timer's id
+   */
   run(): number {
     if (this._running) {
       console.warn(
