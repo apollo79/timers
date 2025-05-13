@@ -13,7 +13,7 @@ export type Listener<T extends any[] = any[]> = (...args: T) => void;
 export const TIMEOUT_MAX = 2147483647; // 2^31-1
 
 export class AbortException extends DOMException {
-  constructor(public cause?: any) {
+  constructor(public override cause?: any) {
     super("The timer was aborted.", "AbortException");
   }
 }

@@ -6,6 +6,7 @@
   "version": "0.2.3",
   "exports": "./mod.ts",
   "publish": {
+    "include": ["src"],
     "exclude": [".github", ".vscode", "test"]
   },
   "imports": {

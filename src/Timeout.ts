@@ -27,7 +27,7 @@ export interface TimeoutOptions<T extends any[] = any[]>
 export class Timeout<T extends any[] = any[]> extends Timer<T> {
   declare readonly options: TimeoutOptions<T>;
 
-  protected _ran = false;
+  protected override _ran = false;
 
   get ran(): boolean {
     return this._ran;
