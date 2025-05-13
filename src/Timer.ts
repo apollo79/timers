@@ -195,7 +195,7 @@ export abstract class Timer<T extends any[] = any[]> {
    * aborts the timer
    * @param reason
    */
-  abort = (reason?: any) => {
+  abort = (reason?: any): void => {
     this.clear();
 
     this._running = false;
