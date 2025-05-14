@@ -6,7 +6,7 @@ export interface TimeoutOptions<T extends any[] = any[]>
   extends TimerOptions<T> {}
 
 /**
- * @class The class representing a timeout
+ * A class representing a timeout.
  *
  * ```ts
  * const abort = new AbortController();

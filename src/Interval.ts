@@ -8,7 +8,7 @@ export interface IntervalOptions<T extends any[] = any[]>
 }
 
 /**
- * @class A class representing an Interval
+ * A class representing an Interval
  */
 export class Interval<T extends any[] = any[]> extends Timer<T> {
   declare readonly options: IntervalOptions<T>;

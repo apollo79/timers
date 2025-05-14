@@ -5,7 +5,7 @@ export interface EveryOptions<T extends any[] = any[]>
   extends Omit<IntervalOptions<T>, "times"> {}
 
 /**
- * @class A class which provides methods to chain together for controlling an interval.
+ * A class which provides methods to chain together for controlling an interval.
  * Should be used with the `every` function.
  *
  * ```ts

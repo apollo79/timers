@@ -16,7 +16,6 @@ export const timers: Map<number, Timer> = new Map<number, Timer>();
 let nextId = 1;
 
 /**
- * @class
  * Shared functionality of the `Timeout` and `Interval` classes
  */
 export abstract class Timer<T extends any[] = any[]> {

@@ -2,7 +2,7 @@
 import { type Listener, Timeout, type TimeoutOptions } from "../mod.ts";
 
 /**
- * @class A class which provides methods to chain together for controlling a timeout.
+ * A class which provides methods to chain together for controlling a timeout.
  * Should be used with the `after` function.
  *
  * ```ts
