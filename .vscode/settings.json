@@ -1,12 +1,6 @@
 {
   "deno.enable": true,
-  "deno.unstable": true,
-  "emeraldwalk.runonsave": {
-    "commands": [
-      {
-        "match": ".*",
-        "cmd": "deno fmt ${file}"
-      }
-    ]
+  "[typescript]": {
+    "editor.defaultFormatter": "denoland.vscode-deno"
   }
 }
