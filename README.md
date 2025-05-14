@@ -5,8 +5,8 @@ All the timing functions you need - for Deno, Bun and the browser.
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 [![Deno](https://github.com/apollo79/timers/actions/workflows/deno.yml/badge.svg)](https://github.com/apollo79/timers/actions/workflows/deno.yml)
 [![Coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/apollo79/2d19c30060d11652aced4d805a104884/raw/timers-main-lcov-coverage.json)](https://github.com/apollo79/timers/actions/workflows/deno.yml)
-[![JSR version](https://jsr.io/badges/@apollo79/timers)](https://jsr.io/badges/@apollo79/timers)
-[![JSR Score](https://jsr.io/badges/@apollo79/timers/score)](https://jsr.io/badges/@apollo79/timers/<package>)
+[![JSR version](https://jsr.io/badges/@apollo79/timers)](https://jsr.io/@apollo79/timers)
+[![JSR Score](https://jsr.io/badges/@apollo79/timers/score)](https://jsr.io/@apollo79/timers/score)
 
 ## Installation
 
