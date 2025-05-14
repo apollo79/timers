@@ -2,7 +2,6 @@
 /**
  * This is the main module of the @apollo79/timers package.
  * It mainly exports all the functions of the package and also adds some trivial abstractions.
- * @module
  */
 
 import { After } from "./src/After.ts";
