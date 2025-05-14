@@ -1,12 +1,17 @@
 // deno-lint-ignore-file no-explicit-any
 import { Interval, type IntervalOptions, type Listener } from "../mod.ts";
 
+/**
+ * The possible options for the {@linkcode Every} class and {@linkcode every} function.
+ * These are the same as the options for {@linkcode Interval} except the {@linkcode IntervalOptions.times}
+ * as the limit can be provided using the {@linkcode Every.limit} method.
+ */
 export interface EveryOptions<T extends any[] = any[]>
   extends Omit<IntervalOptions<T>, "times"> {}
 
 /**
  * A class which provides methods to chain together for controlling an interval.
- * Should be used with the `every` function.
+ * Should be used with the {@linkcode every} function.
  *
  * ```ts
  * const interval = new Every("1min");
@@ -17,12 +22,15 @@ export interface EveryOptions<T extends any[] = any[]>
  * ```
  */
 export class Every<T extends any[] = any[]> {
+  /** Internal `Interval` instance */
   protected _interval?: Interval<T>;
 
+  /** Gets the internally used `Interval` instance */
   get interval(): Interval<T> | undefined {
     return this._interval;
   }
 
+  /** The amount of times the interval should be run */
   #limit = Infinity;
 
   constructor(

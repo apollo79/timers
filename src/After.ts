@@ -3,7 +3,7 @@ import { type Listener, Timeout, type TimeoutOptions } from "../mod.ts";
 
 /**
  * A class which provides methods to chain together for controlling a timeout.
- * Should be used with the `after` function.
+ * Should be used with the {@linkcode after} function.
  *
  * ```ts
  * const timeout = new After(2000);
@@ -14,13 +14,13 @@ import { type Listener, Timeout, type TimeoutOptions } from "../mod.ts";
  * ```
  */
 export class After<T extends any[] = any[]> {
+  /** Internal `Timeout` instance */
   protected _timeout?: Timeout<T>;
 
+  /** Gets the internally used `Timeout` instance */
   get timeout(): Timeout<T> | undefined {
     return this._timeout;
   }
-
-  protected cb?: Listener<never[]>;
 
   constructor(
     public readonly time: number | string,

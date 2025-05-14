@@ -31,7 +31,7 @@ export class AbortException extends DOMException {
 }
 
 /**
- * This interface expands the Promise type with an `abort` method. This is used in `pTimeout`
+ * This interface expands the Promise type with an `abort` method. This is used in {@linkcode pTimeout}`
  */
 export interface AbortablePromise<T> extends Promise<T> {
   /**
@@ -50,7 +50,7 @@ export interface AbortablePromise<T> extends Promise<T> {
  * @param cb the callback to call after the specified delay
  * @param delay the delay after which to call the callback in milliseconds
  * @param args arguments to pass to the callback
- * @returns the timer's id, which can be used with {@link clearTimeout}
+ * @returns the timer's id, which can be used with {@linkcode clearTimeout}
  */
 export function setTimeout(
   cb: Listener,
@@ -75,7 +75,7 @@ export function setTimeout(
  * @param cb the callback to call every [`delay`] milliseconds
  * @param delay the delay after which to call the callback in milliseconds
  * @param args arguments to pass to the callback
- * @returns the timer's id, which can be used with {@link clearInterval}
+ * @returns the timer's id, which can be used with {@linkcode clearInterval}
  */
 export function setInterval(
   cb: Listener,
@@ -90,7 +90,7 @@ export function setInterval(
 }
 
 /**
- * Cancels a scheduled action initiated by {@link setTimeout}.
+ * Cancels a scheduled action initiated by {@linkcode setTimeout}.
  *
  * ```ts
  * const id = setTimeout(() => {console.log('hello');}, 500);
@@ -105,7 +105,7 @@ export function clearTimeout(id = 0): void {
 }
 
 /**
- * Cancels a scheduled action initiated by {@link setInterval}.
+ * Cancels a scheduled action initiated by {@linkcode setInterval}.
  *
  * ```ts
  * const id = setInterval(() => {console.log('hello');}, 500);
@@ -139,8 +139,8 @@ export function clearInterval(id = 0): void {
  * ```
  *
  * @param delay the delay as string containing the time in a human readable format (e.g. "1 day and 3hours") or a number of milliseconds
- * @param options {@link TimeoutOptions}
- * @returns an {@link AbortablePromise}
+ * @param options {@linkcode TimeoutOptions}
+ * @returns an {@linkcode AbortablePromise}
  */
 export function delay(
   delay: number | string,
@@ -199,8 +199,8 @@ export function delay(
  * @param cb the callback to call
  * @param delay the delay as string containing the time in a human readable format (e.g. "1 day and 3hours") or a number of milliseconds
  * @param times how often the callback should be called
- * @param options {@link TimeoutOptions}
- * @returns the timer's id, which can be used with {@link clearInterval}
+ * @param options {@linkcode TimeoutOptions}
+ * @returns the timer's id, which can be used with {@linkcode clearInterval}
  */
 export function times<T extends any[] = any[]>(
   cb: Listener<T>,
@@ -217,7 +217,7 @@ export function times<T extends any[] = any[]>(
 }
 
 /**
- * A typed version of {@link setTimeout}
+ * A typed version of {@linkcode setTimeout}
  *
  * ```ts
  * const timeout = timeout(() => {
@@ -227,8 +227,8 @@ export function times<T extends any[] = any[]>(
  *
  * @param cb the callback to call
  * @param delay the delay as string containing the time in a human readable format (e.g. "1 day and 3hours") or a number of in milliseconds
- * @param options {@link TimeoutOptions}
- * @returns the timer's id, which can be used with {@link clearTimeout}
+ * @param options {@linkcode TimeoutOptions}
+ * @returns the timer's id, which can be used with {@linkcode clearTimeout}
  */
 export function timeout<T extends any[] = any[]>(
   cb: Listener<T>,
@@ -241,7 +241,7 @@ export function timeout<T extends any[] = any[]>(
 }
 
 /**
- * A typed version of {@link setInterval}
+ * A typed version of {@linkcode setInterval}
  *
  * ```ts
  * const interval = interval(() => {
@@ -251,8 +251,8 @@ export function timeout<T extends any[] = any[]>(
  *
  * @param cb the callback to call
  * @param delay the delay as string containing the time in a human readable format (e.g. "1 day and 3hours") or a number of in milliseconds
- * @param options {@link IntervalOptions}
- * @returns the timer's id, which can be used with {@link clearInterval}
+ * @param options {@linkcode IntervalOptions}
+ * @returns the timer's id, which can be used with {@linkcode clearInterval}
  */
 export function interval<T extends any[] = any[]>(
   cb: Listener<T>,
@@ -275,8 +275,8 @@ export function interval<T extends any[] = any[]>(
  *
  * @param time the time after which the callback (specified via the `do` method)
  * as string containing the time in a human readable format (e.g. "1 day and 3hours") or a number of in milliseconds
- * @param options {@link EveryOptions}
- * @returns an instance of the {@link Every} class, on which one can call the `limit`, `do` and `stop` methods
+ * @param options {@linkcode EveryOptions}
+ * @returns an instance of the {@linkcode Every} class, on which one can call the `limit`, `do` and `stop` methods
  */
 export function every<T extends any[] = any[]>(
   time: string | number,
@@ -296,8 +296,8 @@ export function every<T extends any[] = any[]>(
  *
  * @param time the time after which the callback (specified via the `do` method)
  * as string containing the time in a human readable format (e.g. "1 day and 3hours") or a number of in milliseconds
- * @param options {@link EveryOptions}
- * @returns an instance of the {@link After} class, on which one can call the `do` and `stop` methods
+ * @param options {@linkcode EveryOptions}
+ * @returns an instance of the {@linkcode After} class, on which one can call the `do` and `stop` methods
  */
 export function after<T extends any[] = any[]>(
   time: string | number,
@@ -309,7 +309,7 @@ export function after<T extends any[] = any[]>(
 export { pTimeout, TimeoutError } from "./src/pTimeout.ts";
 export type { PTimeoutOptions } from "./src/pTimeout.ts";
 
-export { After, Every, Interval, Timeout };
+export { After, Every, type EveryOptions, Interval, Timeout };
 export type { IntervalOptions, TimeoutOptions };
 
 export {
@@ -319,4 +319,4 @@ export {
   setTimeout as setLongTimeout,
 };
 
-export { Timer } from "./src/Timer.ts";
+export { Timer, type TimerOptions } from "./src/Timer.ts";
