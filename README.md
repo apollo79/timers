@@ -4,7 +4,6 @@ All the timing functions you need - for Deno, Bun and the browser.
 
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 [![Deno](https://github.com/apollo79/timers/actions/workflows/deno.yml/badge.svg)](https://github.com/apollo79/timers/actions/workflows/deno.yml)
-[![codecov](https://codecov.io/github/apollo79/timers/branch/main/graph/badge.svg?token=SSNB2MHK3O)](https://codecov.io/github/apollo79/timers)
 
 ## Installation
 
@@ -12,19 +11,20 @@ All the timing functions you need - for Deno, Bun and the browser.
 
 #### deno
 
-```plaintext
+```bash
 deno add jsr:@apollo79/timers
 ```
 
 #### npm (use any of npx, yarn dlx, pnpm dlx, or bunx)
 
-```plaintext
+```bash
 npx jsr add @apollo79/timers
 ```
 
-The following examples will show code that uses `timers` from JSR.
+## Features and usage
 
-## Features
+After installing, just import the functions you need from `@apollo79/timers` /
+`jsr:@apollo79/timers`.
 
 ### long timeouts and intervals
 
@@ -44,13 +44,6 @@ module! So, if you import `setTimeout`, you should import `clearTimeout` as
 well, as the native function won't clear the timeout!_
 
 ```ts
-import {
-  clearInterval,
-  clearTimeout,
-  setInterval,
-  setTimeout,
-} from "@apollo79/timers";
-
 const timeout = setTimeout(() => {
   console.log("in 30 days");
 }, 1000 * 60 * 60 * 24 * 30);
@@ -87,8 +80,6 @@ it is possible to use a time string as delay argument instead of the number of
 milliseconds. For example:
 
 ```ts
-import { every } from "@apollo79/timers";
-
 every("1minute").do(() => {
   console.log(new Date().toLocaleTimeString());
 });
@@ -121,7 +112,6 @@ but it returns an `AbortablePromise`, so you can abort the promise with calling
   continue to run as long as the timer exists. This is `true` by default.
 
 ```ts
-import { delay } from "@apollo79/timers";
 const MSG = "Please type your name";
 const info = document.querySelector("p.info");
 const nameInput = document.querySelector("input.name");
@@ -147,8 +137,6 @@ option. Instead of passing the args as rest parameter, like with `setInterval`,
 you must pass them as `array`, in order to have the other options.
 
 ```ts
-import { times } from "@apollo79/timers";
-
 const paragraph = document.querySelector("p.numbers");
 const abortBtn = document.querySelector("button.abort");
 const abort = new AbortController();
@@ -185,8 +173,6 @@ following options:
 - `silent`
 
 ```ts
-import { every } from "@apollo79/timers";
-
 every("1min").limit(60).do(() => {
   console.log(new Date().toLocaleTimeString());
 });
@@ -204,8 +190,6 @@ available:
 - `silent`
 
 ```ts
-import { every } from "@apollo79/timers";
-
 after("1min").do(() => {
   console.log(new Date().toLocaleTimeString());
 });
@@ -213,12 +197,10 @@ after("1min").do(() => {
 
 ### `pTimeout`
 
-Adapted from [p-timeout](https://github.com/sindresorhus/p-timeout) Timeout a
+Adapted from [p-timeout](https://github.com/sindresorhus/p-timeout). Times out a
 promise after a specified amount of time.
 
 ```ts
-import { delay, pTimeout } from "@apollo79/timers";
-
 const delayedPromise = delay(500);
 
 await pTimeout(delayedPromise, 50);
@@ -248,8 +230,6 @@ Instead of passing a `Promise` directly, you can pass a function that retuns a
 `Promise`:
 
 ```ts
-import { pTimeout } from "@apollo79/timers";
-
 const pingApi = () => fetch("/api");
 
 await pTimeout(pingApi, "50 ms");
@@ -259,8 +239,6 @@ The function can take an `AbortSignal` as parameter as well, which `abort` event
 fires, when the timeout times out:
 
 ```ts
-import { pTimeout } from "@apollo79/timers";
-
 const pingApi = (signal) => fetch("/api", { signal });
 
 await pTimeout(pingApi, 50);
@@ -269,8 +247,6 @@ await pTimeout(pingApi, 50);
 `pTimeout` also passes down the signal it got:
 
 ```ts
-import { delay, pTimeout } from "@apollo79/timers";
-
 const abort = new AbortController();
 const { signal } = abort;
 
@@ -293,8 +269,6 @@ of the argument expected by the callback. and supports these options:
 - `times` (only `interval`)
 
 ```ts
-import { interval, timeout } from "@apollo79/timers";
-
 const timeout = timeout(() => {
   console.log("in 30 days");
 }, "30 days");
@@ -316,8 +290,6 @@ They are exported as well and you can use them to create timeouts without\
 running them directly.
 
 ```ts
-import { Timeout } from "@apollo79/timers";
-
 const notifyBtn = document.querySelector("button.notify");
 const timeout = new Timeout(() => {
   console.log("hello world");
@@ -350,11 +322,9 @@ For `Timeout`, the following options are available:
   `true` on `Interval` when the `times` option has been passed and the interval
   has run `times` times.
 - `running`: A boolean indicating whether the timeout is currently running
-
-##### Interval only
-
-- `runs`: A number representing the amount of times the interval has run since
-  now
+- `runs`: A number representing the amount of times the interval has run right
+  now. This is used in the `Interval` class and not useful with the `Timeout`
+  class, but since `Timeout` inherits `Interval`, it also exists on `Timeout`
 
 #### Methods
 
@@ -372,8 +342,8 @@ the id returned by setInterval or setTimeout_
 
 To run tests, clone the repository, and run the following command
 
-```plaintext
-deno test
+```bash
+deno task test
 ```
 
 ## Contributing
