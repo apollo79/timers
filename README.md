@@ -322,16 +322,16 @@ For `Timeout`, the following options are available:
   `true` on `Interval` when the `times` option has been passed and the interval
   has run `times` times.
 - `running`: A boolean indicating whether the timeout is currently running
-- `runs`: A number representing the amount of times the interval has run right
-  now. This is used in the `Interval` class and not useful with the `Timeout`
-  class, but since `Timeout` inherits `Interval`, it also exists on `Timeout`
+
+##### Only `Interval`
+- `runs`: A number representing the amount of times the interval has run until now
 
 #### Methods
 
 - `run()`: runs the timeout and returns the timeout's id
 - `abort(reason?: any)`: aborts the timeout
-- `unref()`: makes the process not continue to run as long as the timer exists
-- `ref()`: makes the process continue to run as long as the timer exists
+- `unref()`: makes the process not continue to run as long as the timer exists (only working in Deno)
+- `ref()`: makes the process continue to run as long as the timer exists (only working in Deno)
 
 ##### **NOTE**
 
