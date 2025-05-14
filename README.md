@@ -1,6 +1,6 @@
 # timers
 
-All the timing functions you need - for Deno and the browser.
+All the timing functions you need - for Deno, Bun and the browser.
 
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 [![Deno](https://github.com/apollo79/timers/actions/workflows/deno.yml/badge.svg)](https://github.com/apollo79/timers/actions/workflows/deno.yml)
@@ -13,7 +13,7 @@ All the timing functions you need - for Deno and the browser.
 #### deno
 
 ```plaintext
-deno add @apollo79/timers
+deno add jsr:@apollo79/timers
 ```
 
 #### npm (use any of npx, yarn dlx, pnpm dlx, or bunx)

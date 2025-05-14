@@ -10,40 +10,46 @@ export interface TimerOptions<T extends any[] = any[]> {
   silent?: boolean;
 }
 
+/** A global Map of all the timers, used for clearing them. */
 export const timers: Map<number, Timer> = new Map<number, Timer>();
 
 let nextId = 1;
 
-// shared functionality
+/**
+ * @class
+ * Shared functionality of the `Timeout` and `Interval` classes
+ */
 export abstract class Timer<T extends any[] = any[]> {
+  /** A unique id for this timer */
   public readonly id: number;
 
   /** Indicates whether the process should continue to run as long as the timer exists. This is `true` by default. */
   protected _persistent: boolean;
 
-  /** The timer Id */
+  /** The timer's id */
   protected _timer?: number;
 
+  /** The time left for the timer. This is important when the timer's delay is longer than the standard maximum delay of the engine. */
   protected _timeLeft!: number;
 
-  /**
-   * Indicates whether the timer ran already
-   */
+  /** Indicates whether the timer ran already. */
   protected _ran = false;
 
-  /**
-   * Indicates whether the timer is currently running
-   */
+  /** Indicates whether the timer is currently running. */
   protected _running = false;
 
   readonly options: TimerOptions<T>;
-  /** A Promise, that resolves when the timer gets aborted */
+
+  /** A Promise which resolves when the timer gets aborted. */
   readonly aborted: Promise<AbortException>;
 
+  /** An internal method which resolves the {@link Timer.aborted} promise. */
   protected _resolveAborted!: (value: AbortException) => void;
 
-  /** A boolean value that indicates whether the timer has been aborted */
+  /** A boolean value that indicates whether the timer has been aborted. */
   protected _isAborted = false;
+
+  /** The timer's delay. After this delay the timer's callback is executed. */
   public readonly delay: number;
 
   /** Indicates whether the process should continue to run as long as the timer exists. This is `true` by default. */
@@ -51,22 +57,20 @@ export abstract class Timer<T extends any[] = any[]> {
     return this._persistent;
   }
 
-  /**
-   * The timer Id
-   * @deprecated Don't use this as it doesn't represent the timer Id you should use with `clearTimeout` and `clearInterval`
-   */
+  /** The timer's id */
   get timer(): number {
     return this.id;
   }
 
-  /**
-   * Indicates whether the timer is currently running
-   */
+  /** Indicates whether the timer is currently running */
   get running(): boolean {
     return this._running;
   }
 
-  /** A boolean value that indicates whether the timer has been aborted */
+  /**
+   * A boolean value that indicates whether the timer has been aborted.
+   * Can be used as synchronous check instead of having to use the promise {@link Timer.aborted}
+   */
   get isAborted(): boolean {
     return this._isAborted;
   }
@@ -104,7 +108,7 @@ export abstract class Timer<T extends any[] = any[]> {
 
     const { signal, args, persistent } = options;
 
-    // unique ID
+    // unique id
     this.id = nextId++;
 
     // add this timer to the `timers` Map

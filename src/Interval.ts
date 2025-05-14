@@ -12,8 +12,10 @@ export interface IntervalOptions<T extends any[] = any[]>
  */
 export class Interval<T extends any[] = any[]> extends Timer<T> {
   declare readonly options: IntervalOptions<T>;
+
   protected _runs: number;
 
+  /** The number of times the interval has already run the callback. */
   get runs(): number {
     return this._runs;
   }
