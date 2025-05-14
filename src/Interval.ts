@@ -4,6 +4,7 @@ import { type Listener, TIMEOUT_MAX } from "../mod.ts";
 
 export interface IntervalOptions<T extends any[] = any[]>
   extends TimerOptions<T> {
+  /** How often the callback should get executed */
   times?: number;
 }
 

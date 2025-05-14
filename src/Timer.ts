@@ -3,10 +3,13 @@ import { AbortException, type Listener } from "../mod.ts";
 import { strToMs } from "./util.ts";
 
 export interface TimerOptions<T extends any[] = any[]> {
+  /** The args to pass to the timer's callback */
   args?: T;
+  /** An AbortSignal with which one can abort the timer */
   signal?: AbortSignal;
   /** Indicates whether the process should continue to run as long as the timer exists. This is `true` by default. */
   persistent?: boolean;
+  /** If true, errors thrown in the timer's callback are ignored */
   silent?: boolean;
 }
 
@@ -25,7 +28,7 @@ export abstract class Timer<T extends any[] = any[]> {
   /** Indicates whether the process should continue to run as long as the timer exists. This is `true` by default. */
   protected _persistent: boolean;
 
-  /** The timer's id */
+  /** The timer's id, this is the id from the  */
   protected _timer?: number;
 
   /** The time left for the timer. This is important when the timer's delay is longer than the standard maximum delay of the engine. */
@@ -207,6 +210,7 @@ export abstract class Timer<T extends any[] = any[]> {
 
     this._resolveAborted(exception);
 
+    // remove timer from the global store
     timers.delete(this.id);
 
     this._timer = undefined;
