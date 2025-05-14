@@ -1,9 +1,13 @@
 // deno-lint-ignore-file no-explicit-any
 import type { TimerOptions } from "./Timer.ts";
-import { Interval, type Listener } from "../mod.ts";
+import { type Listener, Timer } from "../mod.ts";
 
+/**
+ * The possible options to pass to a timeout instance. These are the same as {@linkcode TimerOptions},
+ * but without {@linkcode TimerOptions.times} since a timeout only runs once
+ */
 export interface TimeoutOptions<T extends any[] = any[]>
-  extends TimerOptions<T> {}
+  extends Omit<TimerOptions<T>, "times"> {}
 
 /**
  * A class representing a timeout.
@@ -24,7 +28,7 @@ export interface TimeoutOptions<T extends any[] = any[]>
  * yourService.addEventListener("error", () => abort.abort(), { once: true })
  * ```
  */
-export class Timeout<T extends any[] = any[]> extends Interval<T> {
+export class Timeout<T extends any[] = any[]> extends Timer<T> {
   /**
    * @param cb The callback to get executed
    * @param delay The time to delay

@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-import { AbortException, type Listener } from "../mod.ts";
+import { AbortException, type Listener, TIMEOUT_MAX } from "../mod.ts";
 import { strToMs } from "./util.ts";
 
 export interface TimerOptions<T extends any[] = any[]> {
@@ -11,11 +11,14 @@ export interface TimerOptions<T extends any[] = any[]> {
   persistent?: boolean;
   /** If true, errors thrown in the timer's callback are ignored */
   silent?: boolean;
+  /** How often the callback should get executed */
+  times?: number;
 }
 
 /** A global Map of all the timers, used for clearing them. */
 export const timers: Map<number, Timer> = new Map<number, Timer>();
 
+/** starts with 1 to prevent the default value of {@linkcode clearTimeout}'s id argument (0) to clear a timeout */
 let nextId = 1;
 
 /**
@@ -37,6 +40,16 @@ export abstract class Timer<T extends any[] = any[]> {
   /** Indicates whether the timer ran already. */
   protected _ran = false;
 
+  /**
+   * This will only be set to true, if the `times` options has been passed and the interval has run `times` often
+   */
+  get ran(): boolean {
+    return this._ran;
+  }
+
+  /** Indicates how often the timer has run already. */
+  protected _runs: number;
+
   /** Indicates whether the timer is currently running. */
   protected _running = false;
 
@@ -45,7 +58,7 @@ export abstract class Timer<T extends any[] = any[]> {
   /** A Promise which resolves when the timer gets aborted. */
   readonly aborted: Promise<AbortException>;
 
-  /** An internal method which resolves the {@link Timer.aborted} promise. */
+  /** An internal method which resolves the {@linkcode Timer.aborted} promise. */
   protected _resolveAborted!: (value: AbortException) => void;
 
   /** A boolean value that indicates whether the timer has been aborted. */
@@ -71,7 +84,7 @@ export abstract class Timer<T extends any[] = any[]> {
 
   /**
    * A boolean value that indicates whether the timer has been aborted.
-   * Can be used as synchronous check instead of having to use the promise {@link Timer.aborted}
+   * Can be used as synchronous check instead of having to use the promise {@linkcode Timer.aborted}
    */
   get isAborted(): boolean {
     return this._isAborted;
@@ -84,6 +97,7 @@ export abstract class Timer<T extends any[] = any[]> {
    * @param options.args The arguments to get passed to the callback
    * @param options.signal An AbortSignal. It can abort the timer
    * @param options.persistent Indicates whether the process should continue to run as long as the timer exists. This is `true` by default.
+   * @param options.times How often the timer should run
    */
   constructor(
     public readonly cb: Listener<T>,
@@ -143,6 +157,21 @@ export abstract class Timer<T extends any[] = any[]> {
         once: true,
       });
     }
+
+    let { times } = options;
+
+    if (times === undefined) {
+      times = Infinity;
+    } else if (times < 0) {
+      throw new Error("`times` must be 0 or positive");
+    }
+
+    this.options = {
+      times,
+      ...this.options,
+    };
+
+    this._runs = 0;
   }
 
   /**
@@ -184,13 +213,78 @@ export abstract class Timer<T extends any[] = any[]> {
   }
 
   /**
+   * Private run method to deal with the {@linkcode Timer._running} property, as the method may call itself
+   */
+  #run() {
+    if (this._timeLeft <= TIMEOUT_MAX) {
+      this._timer = globalThis.setTimeout(() => {
+        // update runs
+        this._runs++;
+
+        // call the callback with the given args
+        try {
+          this.cb(...this.options.args!);
+        } catch (e) {
+          if (!this.options.silent) {
+            this.abort();
+            throw e;
+          }
+        }
+
+        // reset timeLeft, so that the next run starts with the expected time
+        this._timeLeft = this.delay;
+
+        // if the runs are finished, abort
+        if (this._runs! === this.options.times!) {
+          this.options.signal?.removeEventListener("abort", this.abort);
+
+          this._running = false;
+          // set ran to true as all runs have completed
+          this._ran = true;
+        } // else continue running
+        else {
+          this.#run();
+        }
+      }, this._timeLeft);
+    } else {
+      // long timeout
+      this._timer = globalThis.setTimeout(() => {
+        // update the time left
+        this._timeLeft -= TIMEOUT_MAX;
+
+        // run again with remaining time
+        this.#run();
+      }, TIMEOUT_MAX);
+    }
+
+    if (!this._persistent) {
+      this.unref();
+    }
+  }
+
+  /**
    * Runs the timer.
    * @returns the timer's id
    */
-  abstract run(): number;
+  run(): number {
+    if (this._running) {
+      console.warn(
+        "The interval is already running. The call to run will be ignored",
+      );
+    } else if (this._isAborted) {
+      console.warn(
+        "The interval has been aborted. The call to run will be ignored",
+      );
+    } else {
+      this.#run();
 
+      this._running = true;
+    }
+
+    return this.id;
+  }
   /**
-   * Clears without resolving {@link Timer.aborted}.
+   * Clears without resolving {@linkcode Timer.aborted}.
    */
   protected clear() {
     // clearTimeout and clearInterval are interchangeable, this is ugly, but works
