@@ -48,6 +48,9 @@ jobs:
       - name: Run tests
         run: deno task test
 
-      - uses: codecov/codecov-action@v3
+      - uses: gaelgirodon/ci-badges-action@v1
         with:
-          files: ./cov_profile.lcov
+          gist-id: 2d19c30060d11652aced4d805a104884
+          token: ${{ secrets.GIST_TOKEN }}
+          prefix: timers
+          ref: true
