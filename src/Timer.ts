@@ -7,7 +7,7 @@ export interface TimerOptions<T extends any[] = any[]> {
   args?: T;
   /** An AbortSignal with which one can abort the timer */
   signal?: AbortSignal;
-  /** Indicates whether the process should continue to run as long as the timer exists. This is `true` by default. */
+  /** Indicates whether the process should continue to run as long as the timer exists. This is `true` by default. Only works in `Deno`. */
   persistent?: boolean;
   /** If true, errors thrown in the timer's callback are ignored */
   silent?: boolean;
@@ -96,7 +96,7 @@ export abstract class Timer<T extends any[] = any[]> {
    * @param options
    * @param options.args The arguments to get passed to the callback
    * @param options.signal An AbortSignal. It can abort the timer
-   * @param options.persistent Indicates whether the process should continue to run as long as the timer exists. This is `true` by default.
+   * @param options.persistent Indicates whether the process should continue to run as long as the timer exists. This is `true` by default. Only works in `Deno`.
    * @param options.times How often the timer should run
    */
   constructor(
@@ -236,9 +236,7 @@ export abstract class Timer<T extends any[] = any[]> {
 
         // if the runs are finished, abort
         if (this._runs! === this.options.times!) {
-          this.options.signal?.removeEventListener("abort", this.abort);
-
-          this._running = false;
+          this.clear();
           // set ran to true as all runs have completed
           this._ran = true;
         } // else continue running
@@ -267,13 +265,16 @@ export abstract class Timer<T extends any[] = any[]> {
    * @returns the timer's id
    */
   run(): number {
+    if (this._ran) {
+      console.warn("The timer already ran. The call to run will be ignored");
+    }
     if (this._running) {
       console.warn(
-        "The interval is already running. The call to run will be ignored",
+        "The timer is already running. The call to run will be ignored",
       );
     } else if (this._isAborted) {
       console.warn(
-        "The interval has been aborted. The call to run will be ignored",
+        "The timer has been aborted. The call to run will be ignored",
       );
     } else {
       this.#run();
@@ -284,11 +285,20 @@ export abstract class Timer<T extends any[] = any[]> {
     return this.id;
   }
   /**
-   * Clears without resolving {@linkcode Timer.aborted}.
+   * Clears the timer, sets it's state to not running and removes it from the global store, but without resolving {@linkcode Timer.aborted}.
    */
   protected clear() {
     // clearTimeout and clearInterval are interchangeable, this is ugly, but works
     globalThis.clearTimeout(this._timer);
+
+    this._running = false;
+
+    // remove timer from the global store
+    timers.delete(this.id);
+
+    this._timer = undefined;
+
+    this.options.signal?.removeEventListener("abort", this.abort);
   }
 
   /**
@@ -298,17 +308,8 @@ export abstract class Timer<T extends any[] = any[]> {
   abort = (reason?: any): void => {
     this.clear();
 
-    this._running = false;
-
     const exception = new AbortException(reason);
 
     this._resolveAborted(exception);
-
-    // remove timer from the global store
-    timers.delete(this.id);
-
-    this._timer = undefined;
-
-    this.options.signal?.removeEventListener("abort", this.abort);
   };
 }

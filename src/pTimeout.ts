@@ -25,6 +25,9 @@ export interface PTimeoutOptions<T> {
 
 /**
  * Times out a promise after a specified amount of time.
+ * The returned promise will get rejected after the provided `delay`.
+ * If there is a {@linkcode PTimeoutOptions.fallbackFn | fallbackFn}, it will get executed and the promise wil resolve to its return value.
+ * If the fallback function throws, the promise will get rejected with the thrown error as reason.
  *
  * ```ts
  * const delayedPromise = new Promise(resolve => setTimeout(resolve, 500))
@@ -53,7 +56,10 @@ export function pTimeout<T>(
   // internal abort controller
   const abort = new AbortController();
 
-  const onSignalAbort = () => abort.abort(new AbortException(signal?.reason));
+  let onSignalAbort: (
+    this: AbortSignal,
+    event: AbortSignalEventMap["abort"],
+  ) => void;
 
   // the returned promise
   const abortablePromise = new Promise((resolve, reject) => {
@@ -74,10 +80,14 @@ export function pTimeout<T>(
 
     // handle the provided abort signal
     if (signal) {
-      // if the signal has already been aborted
+      // the signal has already been aborted before we got to this point
       if (signal.aborted) {
+        // reject with the original abort reason
         abort.abort(new AbortException(signal.reason));
       }
+
+      // this will reject with the original abort reason
+      onSignalAbort = () => abort.abort(new AbortException(signal?.reason));
 
       // wait for the signal to be aborted
       signal.addEventListener(
@@ -94,6 +104,13 @@ export function pTimeout<T>(
       }
     }
 
+    // if there is no fallback function
+    const message = failMessage ??
+      `Promise timed out after ${delay} milliseconds`;
+
+    // creating the error outside of the timeout to preserve the stack trace
+    const timeoutError = failError ?? new TimeoutError(message);
+
     timeout = new Timeout(
       () => {
         // try running the fallback function
@@ -101,6 +118,7 @@ export function pTimeout<T>(
           try {
             resolve(fallbackFn());
           } catch (error) {
+            // abort with the error as reason
             abort.abort(error);
           } finally {
             timeout!.abort();
@@ -109,12 +127,7 @@ export function pTimeout<T>(
           return;
         }
 
-        // if there is no fallback function
-        const message = failMessage ??
-          `Promise timed out after ${delay} milliseconds`;
-
-        const timeoutError = failError ?? new TimeoutError(message);
-
+        // abort the promise
         abort.abort(timeoutError);
 
         abortablePromise.abort();
